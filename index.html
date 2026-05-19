@@ -7,83 +7,519 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="סלולרית">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>ניתוח חבילה סלולרית</title>
+<meta name="apple-mobile-web-app-title" content="&#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514;">
+<title>&#1504;&#1497;&#1514;&#1493;&#1495; &#1495;&#1489;&#1497;&#1500;&#1492; &#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514;</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-body{font-family:'Segoe UI','Arial Hebrew',Arial,sans-serif;direction:rtl;background:linear-gradient(135deg,#e8f0fa 0%,#f5f8ff 100%);min-height:100vh;min-height:100dvh;}
+body{font-family:'Segoe UI','Arial Hebrew',Arial,sans-serif;direction:rtl;background:linear-gradient(135deg,#e8f0fa 0%,#f5f8ff 100%);min-height:100vh;}
 input[type=number]{-moz-appearance:textfield;}
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 button,input{font-family:'Segoe UI','Arial Hebrew',Arial,sans-serif;}
 .inp{width:100%;padding:10px 12px;border:1.5px solid #c8d8e8;border-radius:8px;font-size:16px;text-align:right;direction:rtl;background:#f8fbff;outline:none;color:#222;}
 .inp:focus{border-color:#1a5fa8;background:#fff;}
-#credit{text-align:center;padding:14px 0 24px;font-size:12px;color:#8899aa;direction:ltr;letter-spacing:0.3px;}
+#credit{text-align:center;padding:14px 0 24px;font-size:12px;color:#8899aa;direction:ltr;}
 #credit strong{color:#1a5fa8;font-weight:700;}
+.mr-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div style="background:linear-gradient(135deg,#0d3d7c 0%,#1a5fa8 100%);color:#fff;padding:20px 20px 16px;text-align:right;box-shadow:0 4px 20px rgba(0,0,0,0.18);">
-  <div style="font-size:11px;opacity:0.65;margin-bottom:3px;letter-spacing:1px;">מחשבון</div>
-  <div style="font-size:20px;font-weight:800;line-height:1.3;">ניתוח עלות חבילה סלולרית</div>
-  <div style="font-size:13px;opacity:0.8;margin-top:3px;">זקיפת שווי ועלות נטו לעובד</div>
+  <div style="font-size:11px;opacity:0.65;margin-bottom:3px;">&#1502;&#1495;&#1513;&#1489;&#1493;&#1503;</div>
+  <div style="font-size:20px;font-weight:800;line-height:1.3;">&#1504;&#1497;&#1514;&#1493;&#1495; &#1506;&#1500;&#1493;&#1514; &#1495;&#1489;&#1497;&#1500;&#1492; &#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514;</div>
+  <div style="font-size:13px;opacity:0.8;margin-top:3px;">&#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1493;&#1506;&#1500;&#1493;&#1514; &#1504;&#1496;&#1493; &#1500;&#1506;&#1493;&#1489;&#1491;</div>
 </div>
 
-<!-- INPUT CARD -->
 <div style="margin:16px;background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 16px rgba(26,95,168,0.1);">
-  <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:8px;">מדרג השתתפות מעסיק</label>
+
+  <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:8px;">&#1502;&#1491;&#1512;&#1490; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1502;&#1506;&#1505;&#1497;&#1511;</label>
   <div id="tb" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
 
-  <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">עלות חבילה סלולרית (₪)</label>
+  <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">&#1502;&#1491;&#1512;&#1490; &#1502;&#1505; &#1492;&#1499;&#1504;&#1505;&#1492; &#1513;&#1493;&#1500;&#1497;</label>
+  <div id="mrb" class="mr-wrap" style="margin-bottom:16px;"></div>
+
+  <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">&#1506;&#1500;&#1493;&#1514; &#1495;&#1489;&#1497;&#1500;&#1492; &#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514; (&#x20aa;)</label>
   <input id="pi" type="number" class="inp" min="0" step="0.1" style="margin-bottom:14px;" oninput="_setPkg(this.value)">
 
-  <button id="at" onclick="_togAcc()" style="background:none;border:none;color:#1a5fa8;font-size:13px;font-weight:600;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px;margin-bottom:14px;">▸ הוסף עלות אביזרים</button>
+  <button id="at" onclick="_togAcc()" style="background:none;border:none;color:#1a5fa8;font-size:13px;font-weight:600;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;margin-bottom:14px;">&#9658; &#1492;&#1493;&#1505;&#1507; &#1506;&#1500;&#1493;&#1514; &#1488;&#1489;&#1497;&#1494;&#1512;&#1497;&#1501;</button>
   <div id="ar" style="display:none;margin-bottom:14px;">
-    <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">עלות אביזרים (₪)</label>
+    <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">&#1506;&#1500;&#1493;&#1514; &#1488;&#1489;&#1497;&#1494;&#1512;&#1497;&#1501; (&#x20aa;)</label>
     <input id="ai" type="number" class="inp" min="0" step="0.1" value="0" oninput="_setAcc(this.value)">
   </div>
 
-  <button onclick="_go()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0d3d7c,#1a5fa8);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(26,95,168,0.3);">חשב ↓</button>
+  <button onclick="_go()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0d3d7c,#1a5fa8);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(26,95,168,0.3);">&#1495;&#1513;&#1489; &#x2193;</button>
 </div>
 
-<!-- RESULTS -->
 <div id="rd" style="display:none;margin:0 16px 16px;"></div>
 
-<!-- CREDIT -->
-<div id="credit">
-  <strong>By Bahaa Azzam</strong> &nbsp;|&nbsp; יחידת העילית – שע"מ
-</div>
+<div id="credit"><strong>By Bahaa Azzam</strong> &nbsp;|&nbsp; &#1497;&#1495;&#1497;&#1491;&#1514; &#1492;&#1506;&#1497;&#1500;&#1497;&#1514; &ndash; &#1513;&#1506;&quot;&#1502;</div>
 
-<!-- PWA install hint for iOS -->
 <div id="ios-hint" style="display:none;margin:0 16px 16px;padding:10px 14px;background:#fff8e0;border:1px solid #f0a500;border-radius:8px;font-size:12px;color:#7a4a00;text-align:right;line-height:1.7;">
-  📲 <strong>להתקנה על iPhone:</strong> לחץ על 🔗 (Share) ← "הוסף למסך הבית" ← "הוסף"
+  &#x1F4F2; <strong>&#1500;&#1492;&#1514;&#1511;&#1504;&#1492; &#1506;&#1500; iPhone:</strong> &#1500;&#1495;&#1509; &#x1F517; &larr; &quot;&#1492;&#1493;&#1505;&#1507; &#1500;&#1502;&#1505;&#1498; &#1492;&#1489;&#1497;&#1514;&quot;
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="src/app.obf.js"></script>
 <script>
-// Register Service Worker
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(r => console.log('SW registered'))
-      .catch(e => console.log('SW failed', e));
-  });
+const S_T0="\u05de\u05d9\u05e8\u05d1 / \u05de\u05e1\u05d3";
+const S_T1="\u05ea\u05d9\u05db\u05d5\u05df / \u05e0\u05d4\u05d2\u05d9\u05dd";
+const S_T2="\u05e1\u05d2\u05dc \u05d1\u05db\u05d9\u05e8";
+const S_T3="\u05de\u05e0\u05db\"\u05dc\u05d9\u05dd \u05d5\u05de\u05e7\u05d1\u05d9\u05dc\u05d9\u05dd";
+const S_HEAD1="\u05de\u05d7\u05e9\u05d1\u05d5\u05df";
+const S_HEAD2="\u05e0\u05d9\u05ea\u05d5\u05d7 \u05e2\u05dc\u05d5\u05ea \u05d7\u05d1\u05d9\u05dc\u05d4 \u05e1\u05dc\u05d5\u05dc\u05e8\u05d9\u05ea";
+const S_HEAD3="\u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d5\u05e2\u05dc\u05d5\u05ea \u05e0\u05d8\u05d5 \u05dc\u05e2\u05d5\u05d1\u05d3";
+const S_MADRAG="\u05de\u05d3\u05e8\u05d2 \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05de\u05e2\u05e1\u05d9\u05e7";
+const S_PKG_L="\u05e2\u05dc\u05d5\u05ea \u05d7\u05d1\u05d9\u05dc\u05d4 \u05e1\u05dc\u05d5\u05dc\u05e8\u05d9\u05ea";
+const S_ACC_BTN="\u05d4\u05d5\u05e1\u05e3 \u05e2\u05dc\u05d5\u05ea \u05d0\u05d1\u05d9\u05d6\u05e8\u05d9\u05dd";
+const S_ACC_L="\u05e2\u05dc\u05d5\u05ea \u05d0\u05d1\u05d9\u05d6\u05e8\u05d9\u05dd";
+const S_CREDIT="\u05d9\u05d7\u05d9\u05d3\u05ea \u05d4\u05e2\u05d9\u05dc\u05d9\u05ea \u2013 \u05e9\u05e2\"\u05de";
+const S_TITLE="\u05e0\u05d9\u05ea\u05d5\u05d7 \u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d5\u05e2\u05dc\u05d5\u05ea \u05e0\u05d8\u05d5 \u05e2\u05d5\u05d1\u05d3";
+const S_CHAVILA="\u05d7\u05d1\u05d9\u05dc\u05d4";
+const S_SA="\u05e9\u05dc\u05d1 \u05d0\u05f3 \u2013 \u05d4\u05d7\u05dc\u05e7 \u05d4\u05de\u05e1\u05d7\u05e8\u05d9 (\u05de\u05d5\u05dc \u05d7\u05d1\u05e8\u05ea \u05d4\u05e1\u05dc\u05d5\u05dc\u05e8)";
+const S_SB="\u05e9\u05dc\u05d1 \u05d1\u05f3 \u2013 \u05d7\u05d9\u05e9\u05d5\u05d1 \u05d4\u05de\u05e1 (\u05de\u05d5\u05dc \u05e8\u05e9\u05d5\u05ea \u05d4\u05de\u05d9\u05e1\u05d9\u05dd)";
+const S_SC="\u05e9\u05dc\u05d1 \u05d2\u05f3 \u2013 \u05e2\u05dc\u05d5\u05ea \u05d4\u05de\u05e1 \u05d4\u05d0\u05de\u05d9\u05ea\u05d9\u05ea";
+const S_ALUT="\u05e2\u05dc\u05d5\u05ea \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4 \u05d5\u05d4\u05e6\u05d9\u05d5\u05d3 \u05d1\u05e4\u05d5\u05e2\u05dc";
+const S_TAKRA="\u05ea\u05e7\u05e8\u05ea \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05de\u05e9\u05e8\u05d3";
+const S_EIN="\u05d0\u05d9\u05df \u05d7\u05e8\u05d9\u05d2\u05d4 \u2013 \u05d4\u05de\u05e9\u05e8\u05d3 \u05de\u05e9\u05dc\u05dd \u05d0\u05ea \u05de\u05dc\u05d5\u05d0 \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4.";
+const S_NIK="\u05e0\u05d9\u05db\u05d5\u05d9 \u05d7\u05e8\u05d9\u05d2\u05d4:";
+const S_HASH="\u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05e2\u05d5\u05d1\u05d3 \u05d1\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea";
+const S_HALF="\u05d7\u05e6\u05d9 \u05de\u05e2\u05dc\u05d5\u05ea \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4:";
+const S_PACH="\u05e4\u05d7\u05d5\u05ea \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05e2\u05d5\u05d1\u05d3:";
+const S_ZKI="\u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d1\u05ea\u05dc\u05d5\u05e9";
+const S_RECHIV="\u05e8\u05db\u05d9\u05d1";
+const S_MAS1="\u05de\u05e1 \u05d4\u05db\u05e0\u05e1\u05d4";
+const S_MAS2="\u05d1\u05d9\u05d8\u05d5\u05d7 \u05dc\u05d0\u05d5\u05de\u05d9 \u05d5\u05de\u05e1 \u05d1\u05e8\u05d9\u05d0\u05d5\u05ea";
+const S_MAS3="\u05e1\u05da \u05e2\u05dc\u05d5\u05ea \u05d4\u05de\u05e1";
+const S_SHURA="\u05e9\u05d5\u05e8\u05d4 \u05ea\u05d7\u05ea\u05d5\u05e0\u05d4 \u2013 \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea \u05e1\u05d5\u05e4\u05d9\u05ea \u05dc\u05e2\u05d5\u05d1\u05d3:";
+const S_HARUGA="\u05d7\u05e8\u05d9\u05d2\u05d4 \u05de\u05e1\u05d7\u05e8\u05d9\u05ea";
+const S_ALMAS="\u05e2\u05dc\u05d5\u05ea \u05de\u05e1";
+const S_SACH="\u05e1\u05da \u05d9\u05e8\u05d9\u05d3\u05d4 \u05de\u05d4\u05e0\u05d8\u05d5 \u05d1\u05d1\u05e0\u05e7";
+const S_HORAD="\u05d4\u05d5\u05e8\u05d3 PDF";
+const S_BY="By Bahaa Azzam | \u05d9\u05d7\u05d9\u05d3\u05ea \u05d4\u05e2\u05d9\u05dc\u05d9\u05ea \u2013 \u05e9\u05e2\"\u05de";
+const S_MAD="\u05de\u05d3\u05e8\u05d2:";
+const S_HASH2="\u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05de\u05e2\u05e1\u05d9\u05e7:";
+const S_CH="\u05d7\u05d1\u05d9\u05dc\u05d4:";
+const S_AVI="\u05d0\u05d1\u05d9\u05d6\u05e8\u05d9\u05dd:";
+const S_MR1="10% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d0\u05f3";
+const S_MR2="14% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d1\u05f3";
+const S_MR3="20% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d2\u05f3";
+const S_MR4="31% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d3\u05f3";
+const S_MR5="35% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d4\u05f3 (\u05d1\u05e8\u05d9\u05e8\u05ea \u05de\u05d7\u05d3\u05dc)";
+const S_MR6="47% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d5\u05f3";
+const S_MR7="50% \u2013 \u05de\u05d3\u05e8\u05d2 \u05d6\u05f3";
+const S_MASSH2="\u05de\u05e1 \u05e9\u05d5\u05dc\u05d9:";
+const S_MRLBL="\u05de\u05d3\u05e8\u05d2 \u05de\u05e1 \u05d4\u05db\u05e0\u05e1\u05d4 \u05e9\u05d5\u05dc\u05d9";
+
+// &#9472;&#9472;&#9472; Mini PDF Generator &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
+// Pure JS, no dependencies. Supports: Hebrew text (pre-reversed), 
+// colored rectangles, lines, multiple fonts sizes, download as file.
+// &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;
+function MiniPDF() {
+  const W = 595, H = 842; // A4 in points
+  let objects = [];
+  let pageStreams = [];
+  let currentStream = [];
+
+  // &#9472;&#9472; Color helpers &#9472;&#9472;
+  function hexToRGB(hex) {
+    const c = hex.replace('#','');
+    return [parseInt(c.slice(0,2),16)/255, parseInt(c.slice(2,4),16)/255, parseInt(c.slice(4,6),16)/255];
+  }
+  function p3(n) { return n.toFixed(3); }
+
+  // &#9472;&#9472; Stream commands &#9472;&#9472;
+  function fillRect(x, y, w, h, hex) {
+    const [r,g,b] = hexToRGB(hex);
+    currentStream.push(`${p3(r)} ${p3(g)} ${p3(b)} rg`);
+    currentStream.push(`${p3(x)} ${p3(y)} ${p3(w)} ${p3(h)} re f`);
+  }
+  function strokeRect(x, y, w, h, hex, lw) {
+    const [r,g,b] = hexToRGB(hex);
+    currentStream.push(`${p3(r)} ${p3(g)} ${p3(b)} RG`);
+    currentStream.push(`${p3(lw||0.5)} w`);
+    currentStream.push(`${p3(x)} ${p3(y)} ${p3(w)} ${p3(h)} re S`);
+  }
+  function hline(x1, y, x2, hex, lw) {
+    const [r,g,b] = hexToRGB(hex);
+    currentStream.push(`${p3(r)} ${p3(g)} ${p3(b)} RG`);
+    currentStream.push(`${p3(lw||0.3)} w`);
+    currentStream.push(`${p3(x1)} ${p3(y)} m ${p3(x2)} ${p3(y)} l S`);
+  }
+
+  // &#9472;&#9472; Text: PDF coords are bottom-left, we use top-left convention &#9472;&#9472;
+  // font: 0=Helvetica, 1=Helvetica-Bold
+  function text(str, x, topY, size, hex, bold) {
+    const [r,g,b] = hexToRGB(hex);
+    const pdfY = H - topY; // flip Y
+    const font = bold ? '/F2' : '/F1';
+    // Escape parentheses in string
+    const safe = str.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+    currentStream.push(`${p3(r)} ${p3(g)} ${p3(b)} rg`);
+    currentStream.push(`BT ${font} ${size} Tf ${p3(x)} ${p3(pdfY)} Td (${safe}) Tj ET`);
+  }
+
+  // Right-aligned text (approximate: measure by char count * avg_width)
+  function textRight(str, rightX, topY, size, hex, bold) {
+    const avgW = size * 0.45; // rough average char width for Helvetica
+    const strW = str.length * avgW;
+    const x = rightX - strW;
+    text(str, Math.max(10, x), topY, size, hex, bold);
+  }
+
+  // &#9472;&#9472; Build PDF binary &#9472;&#9472;
+  function build() {
+    const streamContent = currentStream.join('\n');
+    const streamBytes = unescape(encodeURIComponent(streamContent));
+
+    let out = [];
+    let offsets = [];
+
+    const w = (s) => out.push(s);
+    
+    w('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
+    
+    // obj 1: catalog
+    offsets[1] = out.join('').length;
+    w('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    
+    // obj 2: pages
+    offsets[2] = out.join('').length;
+    w('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+    
+    // obj 3: page
+    offsets[3] = out.join('').length;
+    w(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}]\n   /Contents 4 0 R\n   /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>\nendobj\n`);
+    
+    // obj 4: content stream
+    offsets[4] = out.join('').length;
+    w(`4 0 obj\n<< /Length ${streamBytes.length} >>\nstream\n${streamContent}\nendstream\nendobj\n`);
+    
+    // obj 5: Helvetica
+    offsets[5] = out.join('').length;
+    w('5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n');
+    
+    // obj 6: Helvetica-Bold
+    offsets[6] = out.join('').length;
+    w('6 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>\nendobj\n');
+    
+    // xref
+    const xrefOffset = out.join('').length;
+    w('xref\n');
+    w(`0 7\n`);
+    w('0000000000 65535 f \n');
+    for (let i = 1; i <= 6; i++) {
+      w(String(offsets[i]).padStart(10,'0') + ' 00000 n \n');
+    }
+    w('trailer\n<< /Size 7 /Root 1 0 R >>\n');
+    w(`startxref\n${xrefOffset}\n%%EOF`);
+    
+    return out.join('');
+  }
+
+  return { fillRect, strokeRect, hline, text, textRight, build, W, H };
 }
 
-// Show iOS install hint if on Safari iOS and not already installed
-(function(){
-  const ua = navigator.userAgent;
-  const isIOS = /iphone|ipad|ipod/i.test(ua);
-  const isSafari = /safari/i.test(ua) && !/chrome|crios/i.test(ua);
-  const isStandalone = ('standalone' in navigator) && navigator.standalone;
-  if(isIOS && isSafari && !isStandalone){
-    document.getElementById('ios-hint').style.display = 'block';
+// &#9472;&#9472; Hebrew reverse (for PDF which is LTR only) &#9472;&#9472;
+function rv(s) { return String(s).split('').reverse().join(''); }
+function fmt(n) { return n.toLocaleString('he-IL',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// &#9472;&#9472; Download PDF &#9472;&#9472;
+function downloadPDF(content, filename) {
+  // Convert to base64 data URI - works on all mobile browsers
+  var bytes = new Uint8Array(content.length);
+  for (var i = 0; i < content.length; i++) {
+    bytes[i] = content.charCodeAt(i) & 0xff;
   }
+  // Build base64
+  var binary = '';
+  for (var j = 0; j < bytes.length; j++) {
+    binary += String.fromCharCode(bytes[j]);
+  }
+  var b64 = btoa(binary);
+  var dataUri = 'data:application/pdf;base64,' + b64;
+  
+  // Show a modal with the PDF link - guaranteed to work on mobile
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:14px;padding:24px;margin:20px;text-align:center;max-width:320px;width:100%;direction:rtl;';
+  box.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">&#128196;</div>'
+    + '<div style="font-size:17px;font-weight:800;color:#0d3d7c;margin-bottom:8px;">&#1492;&#1490;&#1491;&#1512;&#1514; PDF &#1502;&#1493;&#1499;&#1504;&#1514;</div>'
+    + '<div style="font-size:13px;color:#666;margin-bottom:20px;line-height:1.6;">&#1500;&#1495;&#1509; &#1506;&#1500; &#1492;&#1499;&#1508;&#1514;&#1493;&#1512; &#1500;&#1508;&#1514;&#1497;&#1495;&#1492;.<br>&#1489;&#1&#65533;;&#1497;&#1497;&#1508;&#1493;&#1503;: &#x201C;Share&#x201D; &rarr; &#x201C;Save to Files&#x201D;</div>'
+    + '<a href="' + dataUri + '" download="cellular-analysis.pdf" target="_blank" '
+    + 'style="display:block;padding:14px;background:linear-gradient(135deg,#1a7a3c,#27ae60);color:#fff;border-radius:10px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:12px;">&#128196; &#1508;&#1514;&#1495; PDF</a>'
+    + '<button onclick="this.parentNode.parentNode.remove()" '
+    + 'style="width:100%;padding:12px;background:#f0f4f8;border:none;border-radius:10px;font-size:15px;color:#555;cursor:pointer;font-family:inherit;">&#1505;&#1490;&#1493;&#1512;</button>';
+  
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+}
+
+function _pdf() {
+  try {
+    const tier = _T[_ti];
+    const res = _calc(tier.v, _pc, _ac);
+    const pdf = MiniPDF();
+    const M = 40; // left margin in points
+    const RX = pdf.W - M; // right edge
+    let y = 0;
+
+    // &#9472;&#9472; Helper: section header &#9472;&#9472;
+    function sec(title, sy) {
+      pdf.fillRect(M, sy, pdf.W - M*2, 22, '#1a5fa8');
+      pdf.fillRect(pdf.W - M - 5, sy, 5, 22, '#f0a500');
+      pdf.textRight(rv(title), RX - 8, sy + 15, 10, '#ffffff', true);
+      return sy + 28;
+    }
+
+    // &#9472;&#9472; Helper: data row &#9472;&#9472;
+    function row(label, val, ry, bold) {
+      pdf.textRight(rv(label), RX, ry + 10, 9, bold ? '#1a1a1a' : '#444444', bold);
+      pdf.text('NIS ' + fmt(val), M, ry + 10, 9, '#1a5fa8', bold);
+      pdf.hline(M, ry + 14, pdf.W - M, '#e0e8f0', 0.3);
+      return ry + 18;
+    }
+
+    // &#9472;&#9472; HEADER &#9472;&#9472;
+    pdf.fillRect(0, 0, pdf.W, 60, '#0d3d7c');
+    pdf.fillRect(0, 0, 8, 60, '#f0a500');
+    pdf.textRight(rv('\u05e0\u05d9\u05ea\u05d5\u05d7 \u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d5\u05e2\u05dc\u05d5\u05ea \u05e0\u05d8\u05d5 \u05e2\u05d5\u05d1\u05d3 - \u05d7\u05d1\u05d9\u05dc\u05d4 \u05d1\u05ea\u05d5\u05da \u05d4\u05de\u05db\u05e1\u05d4'), RX - 5, 22, 13, '#ffffff', true);
+    pdf.textRight(rv('\u05d7\u05d1\u05d9\u05dc\u05d4 \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea NIS ' + fmt(res.tp) + ' | \u05de\u05d3\u05e8\u05d2: ' + tier.l), RX - 5, 42, 9, '#a0c0ff', false);
+    y = 70;
+
+    // &#9472;&#9472; SECTION A &#9472;&#9472;
+    y = sec('\u05e9\u05dc\u05d1 \u05d0 - \u05d4\u05d7\u05dc\u05e7 \u05d4\u05de\u05e1\u05d7\u05e8\u05d9 (\u05de\u05d5\u05dc \u05d7\u05d1\u05e8\u05ea \u05d4\u05e1\u05dc\u05d5\u05dc\u05e8)', y);
+    pdf.textRight(rv('\u05d1\u05d7\u05d9\u05e0\u05ea \u05d4\u05d7\u05e8\u05d9\u05d2\u05d4 \u05de\u05d4\u05de\u05db\u05e1\u05d4 \u05d4\u05de\u05e9\u05e8\u05d3\u05d9\u05ea:'), RX, y + 10, 9, '#222222', true);
+    y += 18;
+    y = row('\u05e2\u05dc\u05d5\u05ea \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4 \u05d5\u05d4\u05e6\u05d9\u05d5\u05d3 \u05d1\u05e4\u05d5\u05e2\u05dc \u05d1\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea', res.tp, y);
+    y = row('\u05ea\u05e7\u05e8\u05ea \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05de\u05e9\u05e8\u05d3 (' + tier.l + ')', tier.v, y);
+
+    // note box
+    pdf.fillRect(M, y, pdf.W - M*2, 20, '#eef4ff');
+    pdf.fillRect(pdf.W - M - 4, y, 4, 20, '#1a5fa8');
+    const devNote = res.cd === 0
+      ? rv('\u05d0\u05d9\u05df \u05d7\u05e8\u05d9\u05d2\u05d4 - \u05d4\u05de\u05e9\u05e8\u05d3 \u05de\u05e9\u05dc\u05dd \u05d0\u05ea \u05de\u05dc\u05d5\u05d0 \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4.')
+      : rv('\u05e0\u05d9\u05db\u05d5\u05d9 \u05d7\u05e8\u05d9\u05d2\u05d4: NIS ' + fmt(res.tp) + ' - NIS ' + fmt(tier.v) + ' = NIS ' + fmt(res.cd));
+    pdf.textRight(devNote, RX - 6, y + 13, 8.5, '#1a3a6c', false);
+    y += 24;
+
+    // result box
+    pdf.fillRect(M, y, pdf.W - M*2, 20, '#ddeeff');
+    pdf.textRight(rv('\u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05e2\u05d5\u05d1\u05d3 \u05d1\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea = NIS ' + fmt(res.cd)), RX - 6, y + 13, 10, '#0d3d7c', true);
+    y += 28;
+
+    // &#9472;&#9472; SECTION B &#9472;&#9472;
+    y = sec('\u05e9\u05dc\u05d1 \u05d1 - \u05d7\u05d9\u05e9\u05d5\u05d1 \u05d4\u05de\u05e1 (\u05de\u05d5\u05dc \u05e8\u05e9\u05d5\u05ea \u05d4\u05de\u05d9\u05e1\u05d9\u05dd)', y);
+    pdf.textRight(rv('\u05d9\u05d9\u05e9\u05d5\u05dd \u05e0\u05d5\u05e1\u05d7\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d4\u05e9\u05d9\u05de\u05d5\u05e9:'), RX, y + 10, 9, '#222222', true);
+    y += 18;
+    pdf.textRight(rv('1.  \u05d7\u05e6\u05d9 \u05de\u05e2\u05dc\u05d5\u05ea \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4: NIS ' + fmt(res.tp) + ' / 2 = NIS ' + fmt(res.tp/2)), RX, y + 10, 8.5, '#444444', false);
+    y += 16;
+    pdf.textRight(rv('2.  \u05e4\u05d7\u05d5\u05ea \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea: NIS ' + fmt(res.tp/2) + ' - NIS ' + fmt(res.cd) + ' = NIS ' + fmt(res.va)), RX, y + 10, 8.5, '#444444', false);
+    y += 16;
+    pdf.fillRect(M, y, pdf.W - M*2, 20, '#ddeeff');
+    pdf.textRight(rv('\u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9: NIS ' + fmt(res.va)), RX - 6, y + 13, 10, '#0d3d7c', true);
+    y += 28;
+
+    // &#9472;&#9472; SECTION C &#9472;&#9472;
+    y = sec('\u05e9\u05dc\u05d1 \u05d2 - \u05e2\u05dc\u05d5\u05ea \u05d4\u05de\u05e1 \u05d4\u05d0\u05de\u05d9\u05ea\u05d9\u05ea', y);
+
+    // table header
+    pdf.fillRect(M, y, pdf.W - M*2, 20, '#1a5fa8');
+    pdf.textRight(rv('\u05e8\u05db\u05d9\u05d1 \u05d4\u05e0\u05d9\u05db\u05d5\u05d9'), RX - 6, y + 13, 8.5, '#ffffff', true);
+    pdf.text('% NIS', M + 80, y + 13, 8.5, '#ffffff', true);
+    pdf.text(rv('\u05e1\u05db\u05d5\u05dd \u05e0\u05d8\u05d5'), M + 6, y + 13, 8.5, '#ffffff', true);
+    y += 20;
+
+    // table rows
+    function trow(label, pct, val, ry, isTot) {
+      if (isTot) pdf.fillRect(M, ry, pdf.W - M*2, 20, '#1a5fa8');
+      pdf.textRight(rv(label), RX - 6, ry + 13, 8.5, isTot ? '#ffffff' : '#333333', isTot);
+      pdf.text(pct, M + 80, ry + 13, 8.5, isTot ? '#ffffff' : '#1a5fa8', isTot);
+      pdf.text('NIS ' + fmt(val), M + 6, ry + 13, 8.5, isTot ? '#ffcc44' : '#c0392b', isTot);
+      if (!isTot) pdf.hline(M, ry + 16, pdf.W - M, '#e0e8f0', 0.3);
+      return ry + 20;
+    }
+    y = trow('\u05de\u05e1 \u05d4\u05db\u05e0\u05e1\u05d4', '35%', res.it, y, false);
+    y = trow('\u05d1\u05d9\u05d8\u05d5\u05d7 \u05dc\u05d0\u05d5\u05de\u05d9 \u05d5\u05de\u05e1 \u05d1\u05e8\u05d9\u05d0\u05d5\u05ea', '12%', res.nh, y, false);
+    y = trow('\u05e1\u05da \u05d4\u05db\u05dc \u05e2\u05dc\u05d5\u05ea \u05d4\u05de\u05e1 (\u05d9\u05e8\u05d9\u05d3\u05d4 \u05de\u05d4\u05e0\u05d8\u05d5)', '47%', res.tc, y, true);
+    y += 8;
+
+    // &#9472;&#9472; BOTTOM BOX &#9472;&#9472;
+    pdf.fillRect(M, y, pdf.W - M*2, 80, '#fff8e0');
+    pdf.strokeRect(M, y, pdf.W - M*2, 80, '#f0a500', 1.2);
+    pdf.textRight(rv('\u05e9\u05d5\u05e8\u05d4 \u05ea\u05d7\u05ea\u05d5\u05e0\u05d4 - \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea \u05e1\u05d5\u05e4\u05d9\u05ea \u05dc\u05e2\u05d5\u05d1\u05d3:'), RX - 6, y + 16, 10, '#7a4a00', true);
+    pdf.textRight(rv('NIS ' + fmt(res.cd) + '  \u05d7\u05e8\u05d9\u05d2\u05d4 \u05de\u05e1\u05d7\u05e8\u05d9\u05ea'), RX - 6, y + 32, 8.5, '#555555', false);
+    pdf.textRight(rv('NIS ' + fmt(res.tc) + '  \u05e2\u05dc\u05d5\u05ea \u05de\u05e1 (x47%)'), RX - 6, y + 46, 8.5, '#555555', false);
+    pdf.fillRect(M + 10, y + 54, pdf.W - M*2 - 20, 20, '#c0392b');
+    pdf.textRight(rv('\u05e1\u05da \u05d9\u05e8\u05d9\u05d3\u05d4 \u05de\u05d4\u05e0\u05d8\u05d5 \u05d1\u05d1\u05e0\u05e7'), RX - 14, y + 67, 10, '#ffffff', true);
+    pdf.text('NIS ' + fmt(res.nd), M + 14, y + 67, 10, '#ffffff', true);
+    y += 90;
+
+    // &#9472;&#9472; FOOTER &#9472;&#9472;
+    pdf.hline(M, y, pdf.W - M, '#aabbcc', 0.5);
+    y += 12;
+    pdf.textRight(
+      rv('\u05de\u05d3\u05e8\u05d2: ' + tier.l + ' | \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea: NIS ' + fmt(tier.v) + ' | \u05d7\u05d1\u05d9\u05dc\u05d4: NIS ' + fmt(_pc) + (_ac > 0 ? ' | \u05d0\u05d1\u05d9\u05d6\u05e8\u05d9\u05dd: NIS ' + fmt(_ac) : '') + ' | \u05de\u05e1: 47%'),
+      RX, y, 7.5, '#aaaaaa', false
+    );
+    y += 14;
+    pdf.hline(M, y, pdf.W - M, '#aabbcc', 0.5);
+    y += 12;
+    pdf.textRight(rv('By Bahaa Azzam  |  \u05d9\u05d7\u05d9\u05d3\u05ea \u05d4\u05e2\u05d9\u05dc\u05d9\u05ea - \u05e9\u05e2"\u05de'), RX, y, 8.5, '#1a5fa8', true);
+
+    const pdfContent = pdf.build();
+    downloadPDF(pdfContent, 'cellular-analysis.pdf');
+
+  } catch(e) {
+    alert('\u05e9\u05d2\u05d9\u05d0\u05d4: ' + e.message);
+    console.error(e);
+  }
+}
+
+
+const _T=[{l:S_T0,v:88.5},{l:S_T1,v:118},{l:S_T2,v:177},{l:S_T3,v:236}];
+// &#1502;&#1491;&#1512;&#1490;&#1497; &#1502;&#1505; &#1492;&#1499;&#1504;&#1505;&#1492; &#1513;&#1493;&#1500;&#1497;&#1497;&#1501; (&#1500;&#1500;&#1488; &#1489;&#1497;&#1496;&#1493;&#1495; &#1500;&#1488;&#1493;&#1502;&#1497; &#1513;&#1504;&#1513;&#1488;&#1512; 12% &#1514;&#1502;&#1497;&#1491;)
+const _MR=[{l:S_MR1,it:0.10},{l:S_MR2,it:0.14},{l:S_MR3,it:0.20},{l:S_MR4,it:0.31},{l:S_MR5,it:0.35},{l:S_MR6,it:0.47},{l:S_MR7,it:0.50}];
+let _ti=1,_pc=103,_ac=0,_sa=false,_gen=false,_mri=4; // &#1489;&#1512;&#1497;&#1512;&#1514; &#1502;&#1495;&#1491;&#1500;: 35%
+
+function _calc(es,pc,ac,mri){
+  const tp=pc+ac,cd=Math.max(0,tp-es),va=Math.max(0,tp/2-cd);
+  const itr=_MR[mri].it, nhr=0.12, tcr=itr+nhr;
+  const it=va*itr, nh=va*nhr, tc=va*tcr;
+  return{tp,cd,va,it,nh,tc,nd:cd+tc,itr,nhr,tcr};
+}
+function _f(n){return n.toLocaleString("he-IL",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function _pct(r){return Math.round(r*100)+'%';}
+function _selTier(i){_ti=i;_gen=false;_draw();}
+function _selMR(i){_mri=i;_gen=false;_draw();}
+function _setPkg(v){_pc=parseFloat(v)||0;_gen=false;}
+function _setAcc(v){_ac=parseFloat(v)||0;_gen=false;}
+function _togAcc(){_sa=!_sa;_draw();}
+function _go(){_gen=true;_draw();}
+
+function _sec(title,content){
+  return '<div style="margin-bottom:14px;border:1px solid #d0dce8;border-radius:8px;overflow:hidden;">'
+    +'<div style="background:#1a5fa8;color:#fff;padding:7px 12px;font-weight:700;font-size:13px;text-align:right;direction:rtl;border-right:3px solid #f0a500;">'+title+'</div>'
+    +'<div style="padding:12px;background:#fff;direction:rtl;text-align:right;">'+content+'</div>'
+    +'</div>';
+}
+function _row(label,value,bold){
+  return '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f0f4f8;font-size:13px;direction:rtl;">'
+    +'<span style="color:#1a5fa8;font-weight:'+(bold?700:500)+';">&#x20aa; '+_f(value)+'</span>'
+    +'<span style="color:'+(bold?'#1a1a1a':'#444')+';font-weight:'+(bold?700:400)+' ;">'+label+'</span>'
+    +'</div>';
+}
+function _rowhi(label,value){
+  return '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;font-size:13px;direction:rtl;background:#1a5fa8;border-radius:4px;margin-top:4px;">'
+    +'<span style="color:#ffcc44;font-weight:700;">&#x20aa; '+_f(value)+'</span>'
+    +'<span style="color:#fff;font-weight:700;">'+label+'</span>'
+    +'</div>';
+}
+
+function _draw(){
+  const tier=_T[_ti], res=_calc(tier.v,_pc,_ac,_mri);
+
+  // &#1499;&#1508;&#1514;&#1493;&#1512;&#1497; &#1502;&#1491;&#1512;&#1490; &#1502;&#1506;&#1505;&#1497;&#1511;
+  document.getElementById('tb').innerHTML=_T.map(function(t,i){
+    return '<button onclick="_selTier('+i+')" style="padding:11px 14px;border-radius:9px;'
+      +'border:'+(i===_ti?'2.5px solid #1a5fa8':'1.5px solid #d0dce8')+';'
+      +'background:'+(i===_ti?'#e8f0fa':'#f8fbff')+';'
+      +'color:'+(i===_ti?'#0d3d7c':'#555')+';font-weight:'+(i===_ti?700:400)+';'
+      +'font-size:14px;text-align:right;cursor:pointer;display:flex;'
+      +'justify-content:space-between;align-items:center;width:100%;font-family:inherit;">'
+      +'<span style="color:'+(i===_ti?'#1a5fa8':'#aaa')+';font-weight:700;font-size:13px;">&#x20aa; '+_f(t.v)+'</span>'
+      +'<span>'+t.l+'</span></button>';
+  }).join('');
+
+  // &#1499;&#1508;&#1514;&#1493;&#1512;&#1497; &#1502;&#1491;&#1512;&#1490; &#1502;&#1505; &#1513;&#1493;&#1500;&#1497;
+  document.getElementById('mrb').innerHTML=_MR.map(function(m,i){
+    var sel=i===_mri;
+    return '<button onclick="_selMR('+i+')" style="padding:8px 10px;border-radius:8px;'
+      +'border:'+(sel?'2.5px solid #1a5fa8':'1.5px solid #d0dce8')+';'
+      +'background:'+(sel?'#e8f0fa':'#f8fbff')+';'
+      +'color:'+(sel?'#0d3d7c':'#555')+';font-weight:'+(sel?700:400)+';'
+      +'font-size:13px;cursor:pointer;font-family:inherit;flex:1;min-width:52px;">'
+      +_pct(m.it)+'</button>';
+  }).join('');
+
+  document.getElementById('pi').value=_pc;
+  document.getElementById('ar').style.display=_sa?'block':'none';
+  document.getElementById('at').innerHTML=(_sa?'&#9660;':'&#9658;')+' '+S_ACC_BTN;
+
+  var rd=document.getElementById('rd');
+  if(!_gen){rd.style.display='none';return;}
+  rd.style.display='block';
+
+  var devNote=res.cd===0 ? S_EIN : S_NIK+' &#x20aa;'+_f(res.tp)+' - &#x20aa;'+_f(tier.v)+' = &#x20aa;'+_f(res.cd);
+  var totalPct=_pct(res.tcr);
+  var itPct=_pct(res.itr);
+
+  rd.innerHTML=
+    '<div style="margin-bottom:12px;text-align:right;">'
+      +'<div style="font-size:16px;font-weight:800;color:#0d3d7c;">'+S_TITLE+'</div>'
+      +'<div style="font-size:12px;color:#888;margin-top:2px;">'+S_CHAVILA+' &#x20aa;'+_f(res.tp)+' | '+tier.l+' | '+S_MASSH2+' '+itPct+'</div>'
+      +'<hr style="border-color:#1a5fa8;border-width:2px;border-style:solid;margin:8px 0;">'
+    +'</div>'
+
+    +_sec(S_SA,
+      _row(S_ALUT,res.tp)
+      +_row(S_TAKRA+' ('+tier.l+')',tier.v)
+      +'<div style="margin-top:8px;padding:7px 10px;background:#eef4ff;border-radius:6px;border-right:3px solid #1a5fa8;font-size:12.5px;color:#1a3a6c;">'+devNote+'</div>'
+      +_row(S_HASH,res.cd,true)
+    )
+
+    +_sec(S_SB,
+      '<div style="font-size:12.5px;color:#333;line-height:1.75;margin-bottom:6px;">'
+        +'<div>&#x2022; '+S_HALF+' &#x20aa;'+_f(res.tp)+' / 2 = <strong>&#x20aa;'+_f(res.tp/2)+'</strong></div>'
+        +'<div>&#x2022; '+S_PACH+' &#x20aa;'+_f(res.tp/2)+' - &#x20aa;'+_f(res.cd)+' = <strong>&#x20aa;'+_f(res.va)+'</strong></div>'
+      +'</div>'
+      +_row(S_ZKI,res.va,true)
+    )
+
+    +_sec(S_SC,
+      '<div style="border:1px solid #d0dce8;border-radius:6px;overflow:hidden;">'
+        +'<div style="display:grid;grid-template-columns:1fr 50px 82px;background:#1a5fa8;color:#fff;font-weight:700;font-size:11px;padding:5px 8px;direction:rtl;">'
+          +'<span>'+S_RECHIV+'</span><span style="text-align:center">%</span><span style="text-align:left">(&#x20aa;)</span>'
+        +'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 50px 82px;font-size:12.5px;padding:5px 8px;border-top:1px solid #e8eef4;direction:rtl;">'
+          +'<span style="color:#333">'+S_MAS1+'</span>'
+          +'<span style="text-align:center;color:#1a5fa8;font-weight:600">'+itPct+'</span>'
+          +'<span style="text-align:left;color:#c0392b;font-weight:600">&#x20aa;'+_f(res.it)+'</span>'
+        +'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 50px 82px;font-size:12.5px;padding:5px 8px;border-top:1px solid #e8eef4;direction:rtl;">'
+          +'<span style="color:#333">'+S_MAS2+'</span>'
+          +'<span style="text-align:center;color:#1a5fa8;font-weight:600">12%</span>'
+          +'<span style="text-align:left;color:#c0392b;font-weight:600">&#x20aa;'+_f(res.nh)+'</span>'
+        +'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 50px 82px;font-size:13px;padding:6px 8px;background:#1a5fa8;direction:rtl;">'
+          +'<span style="color:#fff;font-weight:700">'+S_MAS3+'</span>'
+          +'<span style="text-align:center;color:#fff;font-weight:700">'+totalPct+'</span>'
+          +'<span style="text-align:left;color:#ffcc44;font-weight:700">&#x20aa;'+_f(res.tc)+'</span>'
+        +'</div>'
+      +'</div>'
+    )
+
+    +'<div style="background:linear-gradient(135deg,#fff8e0,#fffdf0);border:2px solid #f0a500;border-radius:10px;padding:14px;margin-bottom:14px;">'
+      +'<div style="font-weight:800;font-size:13px;color:#7a4a00;margin-bottom:10px;">'+S_SHURA+'</div>'
+      +_row(S_HARUGA,res.cd)
+      +_row(S_ALMAS+' (&#x20aa;'+_f(res.va)+' &times; '+totalPct+')',res.tc)
+      +_rowhi(S_SACH,res.nd)
+    +'</div>'
+
+    +'<button onclick="_pdf()" style="width:100%;padding:13px;background:linear-gradient(135deg,#1a7a3c,#27ae60);'
+      +'color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;'
+      +'cursor:pointer;box-shadow:0 4px 12px rgba(39,174,96,0.25);margin-bottom:8px;'
+      +'font-family:inherit;direction:rtl;">'+S_HORAD+'</button>';
+}
+
+window.onload=function(){_draw();};
+
+</script>
+<script>
+(function(){
+  var ua=navigator.userAgent;
+  if(/iphone|ipad|ipod/i.test(ua)&&/safari/i.test(ua)&&!/chrome|crios/i.test(ua)&&!navigator.standalone)
+    document.getElementById('ios-hint').style.display='block';
 })();
 </script>
 </body>
