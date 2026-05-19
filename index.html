@@ -105,104 +105,131 @@ function _pdf() {
     var totalPct = Math.round(res.tcr*100)+'%';
     var f = function(n){ return n.toLocaleString('he-IL',{minimumFractionDigits:2,maximumFractionDigits:2}); };
 
-    // Build a full HTML page and open in new window for printing/saving as PDF
-    var html = '<!DOCTYPE html><html dir="rtl" lang="he"><head>'
-      + '<meta charset="UTF-8">'
-      + '<meta name="viewport" content="width=device-width,initial-scale=1">'
-      + '<title>&#1504;&#1497;&#1514;&#1493;&#1495; &#1495;&#1489;&#1497;&#1500;&#1492; &#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514;</title>'
-      + '<style>'
-      + 'body{font-family:"Arial Hebrew",Arial,sans-serif;direction:rtl;margin:0;padding:16px;background:#fff;font-size:13px;color:#222;}'
-      + 'h1{font-size:16px;font-weight:800;color:#0d3d7c;margin:0 0 4px;}'
-      + '.sub{font-size:11px;color:#888;margin-bottom:12px;}'
-      + '.sec{margin-bottom:14px;border:1px solid #d0dce8;border-radius:6px;overflow:hidden;}'
-      + '.sec-h{background:#1a5fa8;color:#fff;padding:6px 10px;font-weight:700;font-size:12px;border-right:3px solid #f0a500;}'
-      + '.sec-b{padding:10px;}'
-      + '.row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0f4f8;font-size:12px;}'
-      + '.row .val{color:#1a5fa8;font-weight:600;white-space:nowrap;margin-right:8px;}'
-      + '.note{background:#eef4ff;border-right:3px solid #1a5fa8;padding:6px 8px;border-radius:4px;margin:6px 0;font-size:11.5px;color:#1a3a6c;}'
-      + '.hi{background:#1a5fa8;color:#fff;border-radius:4px;display:flex;justify-content:space-between;padding:5px 8px;margin-top:4px;font-weight:700;}'
-      + '.hi .val{color:#ffcc44;}'
-      + 'table{width:100%;border-collapse:collapse;border-radius:6px;overflow:hidden;}'
-      + 'th{background:#1a5fa8;color:#fff;padding:5px 8px;font-size:11px;}'
-      + 'td{padding:5px 8px;font-size:12px;border-bottom:1px solid #e8eef4;}'
-      + '.td-pct{text-align:center;color:#1a5fa8;font-weight:600;}'
-      + '.td-val{text-align:left;color:#c0392b;font-weight:600;}'
-      + '.tr-total{background:#1a5fa8;}'
-      + '.tr-total td{color:#fff;font-weight:700;border:none;}'
-      + '.tr-total .td-val{color:#ffcc44;}'
-      + '.bottom{background:linear-gradient(135deg,#fff8e0,#fffdf0);border:2px solid #f0a500;border-radius:8px;padding:12px;margin:14px 0;}'
-      + '.bottom-title{font-weight:800;font-size:13px;color:#7a4a00;margin-bottom:8px;}'
-      + '.total-bar{background:#c0392b;color:#fff;border-radius:4px;display:flex;justify-content:space-between;padding:8px 10px;margin-top:6px;font-weight:800;font-size:14px;}'
-      + '.footer{margin-top:16px;padding-top:8px;border-top:1px solid #c8d8e8;font-size:10px;color:#888;display:flex;justify-content:space-between;}'
-      + '.credit{color:#1a5fa8;font-weight:700;}'
-      + '@media print{body{padding:8px;}button{display:none!important;}@page{margin:10mm;}}'
-      + '</style></head><body>'
+    var devNote = res.cd===0
+      ? '&#1492;&#1502;&#1513;&#1512;&#1491; &#1502;&#1513;&#1500;&#1501; &#1489;&#1502;&#1500;&#1493;&#1488;&#1492; &#1500;&#1495;&#1489;&#1512;&#1514; &#1492;&#1505;&#1500;&#1493;&#1500;&#1512; &#x20aa;'+f(_pc+_ac)+', &#1493;&#1492;&#1497;&#1514;&#1512;&#1492; &#1502;&#1504;&#1493;&#1499;&#1492; &#1497;&#1513;&#1497;&#1512;&#1493;&#1514; &#1502;&#1492;&#1513;&#1499;&#1512; &#1513;&#1500; &#1492;&#1506;&#1493;&#1489;&#1491;: 0.'
+      : '&#1492;&#1502;&#1513;&#1512;&#1491; &#1502;&#1513;&#1500;&#1501; &#1500;&#1495;&#1489;&#1512;&#1514; &#1492;&#1505;&#1500;&#1493;&#1500;&#1512; &#x20aa;'+f(tier.v)+', &#1493;&#1492;&#1497;&#1514;&#1512;&#1492; &#1502;&#1504;&#1493;&#1499;&#1492; &#1497;&#1513;&#1497;&#1512;&#1493;&#1514; &#1502;&#1492;&#1513;&#1499;&#1512; &#1513;&#1500; &#1492;&#1506;&#1493;&#1489;&#1491;: &#x20aa;'+f(res.tp)+' &#8722; &#x20aa;'+f(tier.v)+' = &#x20aa;'+f(res.cd)+'.';
 
-      // Header
-      + '<h1>&#1504;&#1497;&#1514;&#1493;&#1495; &#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1493;&#1506;&#1500;&#1493;&#1514; &#1504;&#1496;&#1493; &#1506;&#1493;&#1489;&#1491;</h1>'
-      + '<div class="sub">&#1495;&#1489;&#1497;&#1500;&#1492; &#x20aa;'+f(res.tp)+' | '+tier.l+' | &#1502;&#1505; &#1513;&#1493;&#1500;&#1497;: '+itPct+'</div>'
+    var accNote = _ac > 0 ? ' (&#1499;&#1493;&#1500;&#1500; &#1502;&#x22;&#1506; &#x20aa;'+f(_ac)+')' : '';
+
+    var html = '<!DOCTYPE html><html dir="rtl" lang="he"><head>'
+      +'<meta charset="UTF-8">'
+      +'<meta name="viewport" content="width=device-width,initial-scale=1">'
+      +'<style>'
+      +'*{box-sizing:border-box;margin:0;padding:0;}'
+      +'body{font-family:"Arial Hebrew",Arial,sans-serif;direction:rtl;color:#222;font-size:13px;background:#f5f5f5;}'
+      +'.page{background:#fff;max-width:760px;margin:0 auto;padding:24px 28px;}'
+      +'h1{font-size:20px;font-weight:800;color:#1a1a1a;margin-bottom:4px;}'
+      +'.subtitle{font-size:12px;color:#666;margin-bottom:16px;}'
+      +'.intro{font-size:13px;line-height:1.7;margin-bottom:20px;color:#333;border-bottom:2px solid #1a5fa8;padding-bottom:14px;}'
+      +'.intro strong{color:#0d3d7c;}'
+      +'.sec{margin-bottom:20px;}'
+      +'.sec-title{color:#1a5fa8;font-weight:700;font-size:14px;padding:6px 0 6px 0;border-right:4px solid #1a5fa8;padding-right:10px;margin-bottom:10px;}'
+      +'.box{border:1px solid #e0e8f0;border-radius:6px;padding:12px 14px;background:#fafcff;}'
+      +'.box-title{font-weight:700;font-size:13px;margin-bottom:8px;}'
+      +'.bullet{margin-right:8px;margin-bottom:6px;font-size:13px;line-height:1.6;list-style:none;padding-right:12px;}'
+      +'.bullet li{margin-bottom:6px;position:relative;}'
+      +'.bullet li::before{content:"&#8226;";position:absolute;right:-12px;color:#1a5fa8;}'
+      +'.calc-box{background:#eef4ff;border-right:4px solid #1a5fa8;padding:8px 12px;border-radius:4px;margin:10px 0;font-size:13px;color:#0d3d7c;font-weight:600;text-align:center;}'
+      +'table{width:100%;border-collapse:collapse;margin-top:8px;border-radius:6px;overflow:hidden;}'
+      +'thead tr{background:#1a5fa8;color:#fff;}'
+      +'th{padding:8px 10px;font-size:12px;font-weight:700;}'
+      +'th:first-child{text-align:right;}'
+      +'th:nth-child(2){text-align:center;}'
+      +'th:nth-child(3){text-align:left;}'
+      +'td{padding:7px 10px;font-size:13px;border-bottom:1px solid #e8eef4;}'
+      +'td:first-child{text-align:right;}'
+      +'td:nth-child(2){text-align:center;color:#1a5fa8;font-weight:600;}'
+      +'td:nth-child(3){text-align:left;}'
+      +'.tr-total{background:#f0f4f8;font-weight:700;}'
+      +'.tr-total td:nth-child(3){color:#c0392b;font-weight:800;font-size:14px;}'
+      +'.bottom-box{margin-top:20px;border:1px solid #f0a500;background:linear-gradient(135deg,#fff8e0,#fffdf0);border-radius:8px;padding:14px 16px;}'
+      +'.bottom-title{color:#c0392b;font-weight:800;font-size:14px;margin-bottom:10px;}'
+      +'.bottom-item{margin-bottom:5px;font-size:13px;line-height:1.6;list-style:none;padding-right:12px;position:relative;}'
+      +'.bottom-item::before{content:"&#8226;";position:absolute;right:0;color:#c0392b;}'
+      +'.bottom-note{margin-top:10px;font-size:12.5px;color:#555;line-height:1.7;border-top:1px solid #f0d070;padding-top:8px;}'
+      +'.bottom-note strong{color:#0d3d7c;}'
+      +'.footer{margin-top:16px;font-size:10.5px;color:#888;text-align:center;border-top:1px solid #ddd;padding-top:8px;}'
+      +'.credit{color:#1a5fa8;font-weight:700;}'
+      +'button.print-btn{display:block;margin:16px auto 0;padding:12px 36px;background:linear-gradient(135deg,#0d3d7c,#1a5fa8);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}'
+      +'@media print{button{display:none!important;}body{background:#fff;}@page{margin:12mm;size:A4;}}'
+      +'</style></head><body><div class="page">'
+
+      // Title
+      +'<h1>&#1504;&#1497;&#1514;&#1493;&#1495; &#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1493;&#1506;&#1500;&#1493;&#1514; &#1504;&#1496;&#1493; &#1506;&#1493;&#1489;&#1491; &#8211; &#1502;&#1491;&#1512;&#1490; '+tier.l+'</h1>'
+      +'<div class="subtitle">&#1504;&#1497;&#1514;&#1493;&#1495; &#1502;&#1506;&#1513;&#1497; &#1506;&#1489;&#1493;&#1512; &#1495;&#1489;&#1497;&#1500;&#1492; &#1495;&#1493;&#1491;&#1513;&#1497;&#1514; &#1489;&#1506;&#1500;&#1493;&#1514; &#x20aa;'+f(res.tp)+' (&#1502;&#1491;&#1512;&#1490; '+tier.l+')</div>'
+
+      // Intro paragraph
+      +'<div class="intro">&#1500;&#1492;&#1500;&#1503; &#1508;&#1497;&#1512;&#1493;&#1496; &#1513;&#1500;&#1489;&#1497; &#1492;&#1495;&#1497;&#1513;&#1493;&#1489; &#1492;&#1502;&#1500;&#1488;&#1497;&#1501; &#1506;&#1489;&#1493;&#1512; &#1506;&#1493;&#1489;&#1491; &#1489;&#1502;&#1513;&#1512;&#1491; <strong>'+tier.l+'</strong>, '
+      +'&#1513;&#1489;&#1493; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1502;&#1513;&#1512;&#1491; &#1506;&#1493;&#1502;&#1491;&#1514; &#1506;&#1500; &#x20aa;'+f(tier.v)+accNote+', &#1506;&#1489;&#1493;&#1512; &#1495;&#1489;&#1497;&#1500;&#1492; &#1493;&#1510;&#1497;&#1493;&#1491; &#1489;&#1506;&#1500;&#1493;&#1514; &#x20aa;'+f(res.tp)+'.'
+      +'</div>'
 
       // Section A
-      + '<div class="sec"><div class="sec-h">&#1513;&#1500;&#1489; &#1488;&#1468; &#8211; &#1492;&#1495;&#1500;&#1511; &#1492;&#1502;&#1505;&#1495;&#1512;&#1497; (&#1502;&#1493;&#1500; &#1495;&#1489;&#1512;&#1514; &#1492;&#1505;&#1500;&#1493;&#1500;&#1512;)</div><div class="sec-b">'
-      + '<div class="row"><span>&#1506;&#1500;&#1493;&#1514; &#1492;&#1495;&#1489;&#1497;&#1500;&#1492; &#1493;&#1492;&#1510;&#1497;&#1493;&#1491; &#1489;&#1508;&#1493;&#1506;&#1500;</span><span class="val">&#x20aa; '+f(res.tp)+'</span></div>'
-      + '<div class="row"><span>&#1514;&#1511;&#1512;&#1514; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1502;&#1513;&#1512;&#1491; ('+tier.l+')</span><span class="val">&#x20aa; '+f(tier.v)+'</span></div>'
-      + '<div class="note">'+(res.cd===0?'&#1488;&#1497;&#1503; &#1495;&#1512;&#1497;&#1490;&#1492; &#8211; &#1492;&#1502;&#1513;&#1512;&#1491; &#1502;&#1513;&#1500;&#1501; &#1488;&#1514; &#1502;&#1500;&#1493;&#1488; &#1492;&#1495;&#1489;&#1497;&#1500;&#1492;.':'&#1504;&#1497;&#1499;&#1493;&#1497; &#1495;&#1512;&#1497;&#1490;&#1492;: &#x20aa;'+f(res.tp)+' - &#x20aa;'+f(tier.v)+' = &#x20aa;'+f(res.cd))+'</div>'
-      + '<div class="row" style="font-weight:700"><span>&#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1506;&#1493;&#1489;&#1491; &#1489;&#1495;&#1513;&#1489;&#1493;&#1504;&#1497;&#1514;</span><span class="val" style="font-size:14px">&#x20aa; '+f(res.cd)+'</span></div>'
-      + '</div></div>'
+      +'<div class="sec">'
+      +'<div class="sec-title">&#1513;&#1500;&#1489; &#1488;&#1468; &#8211; &#1492;&#1495;&#1500;&#1511; &#1492;&#1502;&#1505;&#1495;&#1512;&#1497; (&#1492;&#1495;&#1513;&#1489;&#1493;&#1504;&#1497;&#1514; &#1502;&#1493;&#1500; &#1495;&#1489;&#1512;&#1514; &#1492;&#1505;&#1500;&#1493;&#1500;&#1512;)</div>'
+      +'<div class="box">'
+      +'<div class="box-title">&#1502;&#1497;&#1502;&#1493;&#1503; &#1492;&#1495;&#1512;&#1497;&#1490;&#1492; &#1502;&#1492;&#1502;&#1499;&#1505;&#1492; &#1492;&#1502;&#1513;&#1512;&#1491;&#1497;&#1514;:</div>'
+      +'<ul class="bullet">'
+      +'<li>&#1506;&#1500;&#1493;&#1514; &#1492;&#1495;&#1489;&#1497;&#1500;&#1492; &#1492;&#1499;&#1493;&#1500;&#1500;&#1514; &#1489;&#1495;&#1513;&#1489;&#1493;&#1504;&#1497;&#1514;: <strong>&#x20aa; '+f(res.tp)+'</strong></li>'
+      +'<li>&#1514;&#1511;&#1512;&#1514; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1502;&#1513;&#1512;&#1491; &#1500;&#1502;&#1491;&#1512;&#1490; '+tier.l+': <strong>&#x20aa; '+f(tier.v)+'</strong></li>'
+      +'<li><strong>&#1504;&#1497;&#1499;&#1493;&#1497; &#1495;&#1512;&#1497;&#1490;&#1492; &#1502;&#1492;&#1513;&#1499;&#1512; (&#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1506;&#1493;&#1489;&#1491;):</strong> '+devNote+'</li>'
+      +'</ul>'
+      +'<div class="calc-box">&#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1506;&#1493;&#1489;&#1491; &#1489;&#1495;&#1513;&#1489;&#1493;&#1504;&#1497;&#1514; = &#x20aa; '+f(res.cd)+'</div>'
+      +'</div></div>'
 
       // Section B
-      + '<div class="sec"><div class="sec-h">&#1513;&#1500;&#1489; &#1489;&#1468; &#8211; &#1495;&#1497;&#1513;&#1493;&#1489; &#1492;&#1502;&#1505; (&#1502;&#1493;&#1500; &#1512;&#1513;&#1493;&#1514; &#1492;&#1502;&#1497;&#1505;&#1497;&#1501;)</div><div class="sec-b">'
-      + '<div style="font-size:12px;line-height:1.8;margin-bottom:6px;">'
-      + '<div>&#x2022; &#1495;&#1510;&#1497; &#1502;&#1506;&#1500;&#1493;&#1514; &#1492;&#1495;&#1489;&#1497;&#1500;&#1492;: &#x20aa;'+f(res.tp)+' / 2 = <strong>&#x20aa;'+f(res.tp/2)+'</strong></div>'
-      + '<div>&#x2022; &#1508;&#1495;&#1493;&#1514; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514;: &#x20aa;'+f(res.tp/2)+' - &#x20aa;'+f(res.cd)+' = <strong>&#x20aa;'+f(res.va)+'</strong></div>'
-      + '</div>'
-      + '<div class="row" style="font-weight:700"><span>&#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1489;&#1514;&#1500;&#1493;&#1513;</span><span class="val" style="font-size:14px">&#x20aa; '+f(res.va)+'</span></div>'
-      + '</div></div>'
+      +'<div class="sec">'
+      +'<div class="sec-title">&#1513;&#1500;&#1489; &#1489;&#1468; &#8211; &#1495;&#1497;&#1513;&#1493;&#1489; &#1492;&#1502;&#1505; (&#1502;&#1493;&#1500; &#1512;&#1513;&#1493;&#1514; &#1492;&#1502;&#1497;&#1505;&#1497;&#1501;)</div>'
+      +'<div class="box">'
+      +'<div class="box-title">&#1497;&#1497;&#1513;&#1493;&#1501; &#1504;&#1493;&#1505;&#1495;&#1514; &#1513;&#1493;&#1493;&#1497; &#1492;&#1513;&#1497;&#1502;&#1493;&#1513; &#1493;&#1492;&#1490;&#1504;&#1492; &#1502;&#1499;&#1508;&#1500;:</div>'
+      +'<ol style="padding-right:18px;font-size:13px;line-height:1.8;">'
+      +'<li><strong>&#1511;&#1489;&#1497;&#1506;&#1514; &#1492;&#1513;&#1493;&#1493;&#1497; &#1492;&#1508;&#1512;&#1496;&#1497; &#1492;&#1502;&#1502;&#1493;&#1505;&#1492; (&#1495;&#1510;&#1497; &#1502;&#1506;&#1500;&#1493;&#1514; &#1492;&#1495;&#1489;&#1497;&#1500;&#1492; &#1489;&#1508;&#1493;&#1506;&#1500;):</strong> &#x20aa;'+f(res.tp)+' / 2 = &#x20aa;'+f(res.tp/2)+'. &#1505;&#1499;&#1493;&#1501; &#1494;&#1492; &#1504;&#1502;&#1510;&#1488; &#1489;&#1514;&#1493;&#1498; &#1514;&#1511;&#1512;&#1514; &#1492;&#1502;&#1505; &#1492;&#1502;&#1511;&#1505;&#1497;&#1502;&#1500;&#1497;&#1514;.</li>'
+      +'<li><strong>&#1492;&#1508;&#1495;&#1514;&#1514; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1492;&#1506;&#1493;&#1489;&#1491;:</strong> &#1512;&#1513;&#1493;&#1514; &#1492;&#1502;&#1497;&#1505;&#1497;&#1501; &#1502;&#1490;&#1497;&#1504;&#1492; &#1506;&#1500; &#1492;&#1506;&#1493;&#1489;&#1491; &#1499;&#1508;&#1500; &#1502;&#1505; &#1493;&#1502;&#1511;&#1494;&#1514; &#1502;&#1492;&#1513;&#1493;&#1493;&#1497; &#1488;&#1514; &#1492;&#1505;&#1499;&#1493;&#1501; &#1513;&#1492;&#1506;&#1493;&#1489;&#1491; &#1499;&#1489;&#1512; &#1513;&#1497;&#1500;&#1501; &#1502;&#1499;&#1497;&#1505;&#1493; (&#x20aa;'+f(res.cd)+').</li>'
+      +'<li><strong>&#1505;&#1499;&#1493;&#1501; &#1494;&#1511;&#1497;&#1508;&#1514; &#1492;&#1513;&#1493;&#1493;&#1497; &#1489;&#1514;&#1500;&#1493;&#1513; (&#x22;&#1489;&#1512;&#1493;&#1496;&#1493; &#1512;&#1506;&#1497;&#1493;&#1504;&#1497;&#x22;):</strong></li>'
+      +'</ol>'
+      +'<div class="calc-box">&#x20aa;'+f(res.tp/2)+' &#8722; &#x20aa;'+f(res.cd)+' = &#x20aa;'+f(res.va)+'</div>'
+      +'</div></div>'
 
       // Section C
-      + '<div class="sec"><div class="sec-h">&#1513;&#1500;&#1489; &#1490;&#1468; &#8211; &#1506;&#1500;&#1493;&#1514; &#1492;&#1502;&#1505; &#1492;&#1488;&#1502;&#1497;&#1514;&#1497;&#1514;</div><div class="sec-b">'
-      + '<table><thead><tr><th style="text-align:right">&#1512;&#1499;&#1497;&#1489;</th><th>%</th><th style="text-align:left">&#1505;&#1499;&#1493;&#1501; (&#x20aa;)</th></tr></thead><tbody>'
-      + '<tr><td>&#1502;&#1505; &#1492;&#1499;&#1504;&#1505;&#1492;</td><td class="td-pct">'+itPct+'</td><td class="td-val">&#x20aa;'+f(res.it)+'</td></tr>'
-      + '<tr><td>&#1489;&#1497;&#1496;&#1493;&#1495; &#1500;&#1488;&#1493;&#1502;&#1497; &#1493;&#1502;&#1505; &#1489;&#1512;&#1497;&#1488;&#1493;&#1514;</td><td class="td-pct">12%</td><td class="td-val">&#x20aa;'+f(res.nh)+'</td></tr>'
-      + '<tr class="tr-total"><td>&#1505;&#1498; &#1506;&#1500;&#1493;&#1514; &#1492;&#1502;&#1505;</td><td class="td-pct" style="color:#fff">'+totalPct+'</td><td class="td-val">&#x20aa;'+f(res.tc)+'</td></tr>'
-      + '</tbody></table>'
-      + '</div></div>'
+      +'<div class="sec">'
+      +'<div class="sec-title">&#1513;&#1500;&#1489; &#1490;&#1468; &#8211; &#1513;&#1493;&#1512;&#1514; &#1492;&#1504;&#1496;&#1493; &#1489;&#1514;&#1500;&#1493;&#1513; (&#1506;&#1500;&#1493;&#1514; &#1492;&#1502;&#1505; &#1492;&#1488;&#1502;&#1497;&#1514;&#1497;&#1514;)</div>'
+      +'<div class="box">'
+      +'<div style="font-size:12.5px;margin-bottom:8px;">&#1506;&#1500; &#1508;&#1497; &#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1513;&#1500; &#x20aa;'+f(res.va)+' (&#1504;&#1496;&#1493; &#1506;&#1494;&#1512; &#1489;&#1514;&#1500;&#1493;&#1513;), &#1502;&#1495;&#1493;&#1513;&#1489;&#1497;&#1501; &#1492;&#1504;&#1497;&#1499;&#1493;&#1497;&#1497;&#1501; &#1492;&#1489;&#1488;&#1497;&#1501; &#1502;&#1492;&#1504;&#1496;&#1493;:</div>'
+      +'<table><thead><tr>'
+      +'<th style="text-align:right">&#1512;&#1499;&#1497;&#1489; &#1492;&#1504;&#1497;&#1499;&#1493;&#1497; &#1502;&#1492;&#1513;&#1499;&#1512;</th>'
+      +'<th style="text-align:center">&#1488;&#1495;&#1493;&#1494; &#1502;&#1505; &#1502;&#1513;&#1493;&#1506;&#1512;</th>'
+      +'<th style="text-align:left">&#1505;&#1499;&#1493;&#1501; &#1492;&#1504;&#1497;&#1499;&#1493;&#1497; &#1489;&#1508;&#1493;&#1506;&#1500; (&#1504;&#1496;&#1493;)</th>'
+      +'</tr></thead><tbody>'
+      +'<tr><td>&#1502;&#1505; &#1492;&#1499;&#1504;&#1505;&#1492;</td><td style="text-align:center">'+itPct+'</td><td style="text-align:left">&#x20aa; '+f(res.it)+'</td></tr>'
+      +'<tr><td>&#1489;&#1497;&#1496;&#1493;&#1495; &#1500;&#1488;&#1493;&#1502;&#1497; &#1493;&#1502;&#1505; &#1489;&#1512;&#1497;&#1488;&#1493;&#1514;</td><td style="text-align:center">12%</td><td style="text-align:left">&#x20aa; '+f(res.nh)+'</td></tr>'
+      +'<tr class="tr-total"><td><strong>&#1505;&#1498; &#1492;&#1499;&#1500; &#1506;&#1500;&#1493;&#1514; &#1492;&#1502;&#1505; (&#1497;&#1512;&#1497;&#1491;&#1492; &#1502;&#1492;&#1504;&#1496;&#1493;)</strong></td><td style="text-align:center;color:#1a5fa8"><strong>'+totalPct+'</strong></td><td style="text-align:left;color:#c0392b"><strong>&#x20aa; '+f(res.tc)+'</strong></td></tr>'
+      +'</tbody></table>'
+      +'</div></div>'
 
-      // Bottom
-      + '<div class="bottom">'
-      + '<div class="bottom-title">&#1513;&#1493;&#1512;&#1492; &#1514;&#1495;&#1514;&#1493;&#1504;&#1492; &#8211; &#1506;&#1500;&#1493;&#1514; &#1495;&#1493;&#1491;&#1513;&#1497;&#1514; &#1505;&#1493;&#1508;&#1497;&#1514; &#1500;&#1506;&#1493;&#1489;&#1491;:</div>'
-      + '<div class="row"><span>&#1495;&#1512;&#1497;&#1490;&#1492; &#1502;&#1505;&#1495;&#1512;&#1497;&#1514;</span><span class="val">&#x20aa; '+f(res.cd)+'</span></div>'
-      + '<div class="row"><span>&#1506;&#1500;&#1493;&#1514; &#1502;&#1505; (&#x20aa;'+f(res.va)+' &times; '+totalPct+')</span><span class="val">&#x20aa; '+f(res.tc)+'</span></div>'
-      + '<div class="total-bar"><span>&#1505;&#1498; &#1497;&#1512;&#1497;&#1491;&#1492; &#1502;&#1492;&#1504;&#1496;&#1493; &#1489;&#1489;&#1504;&#1511;</span><span>&#x20aa; '+f(res.nd)+'</span></div>'
-      + '</div>'
+      // Bottom line
+      +'<div class="bottom-box">'
+      +'<div class="bottom-title">&#1513;&#1493;&#1512;&#1492; &#1514;&#1495;&#1514;&#1493;&#1504;&#1492; &#8211; &#1506;&#1500;&#1493;&#1514; &#1495;&#1493;&#1491;&#1513;&#1497;&#1514; &#1505;&#1493;&#1508;&#1497;&#1514; &#1500;&#1506;&#1493;&#1489;&#1491;:</div>'
+      +'<div style="font-size:13px;margin-bottom:8px;">&#1489;&#1505;&#1493;&#1508;&#1493; &#1513;&#1500; &#1495;&#1493;&#1491;&#1513;, &#1492;&#1504;&#1496;&#1493; &#1513;&#1500; &#1492;&#1506;&#1493;&#1489;&#1491; &#1489;&#1489;&#1504;&#1511; &#1497;&#1493;&#1512;&#1491; &#1489;&#x2d;&#x20aa; '+f(res.nd)+' &#1489;&#1500;&#1489;&#1491;, &#1492;&#1502;&#1493;&#1512;&#1499;&#1489;&#1497;&#1501; &#1502;&#1497;:</div>'
+      +'<ul style="list-style:none;padding-right:12px;">'
+      +'<li class="bottom-item">&#x20aa; '+f(res.cd)+' &#8211; &#1506;&#1489;&#1493;&#1512; &#1502;&#1497;&#1502;&#1493;&#1503; &#1492;&#1495;&#1500;&#1511; &#1492;&#1502;&#1505;&#1495;&#1512;&#1497; &#1513;&#1502;&#1506;&#1493;&#1489;&#1512; &#1500;&#1514;&#1511;&#1512;&#1492; &#1492;&#1502;&#1513;&#1512;&#1491;&#1497;&#1514;.</li>'
+      +'<li class="bottom-item">&#x20aa; '+f(res.tc)+' &#8211; &#1506;&#1489;&#1493;&#1512; &#1514;&#1513;&#1500;&#1493;&#1501; &#1492;&#1502;&#1505;&#1497;&#1501; &#1492;&#1488;&#1502;&#1497;&#1514;&#1497;&#1497;&#1501; &#1500;&#1512;&#1513;&#1493;&#1514; &#1492;&#1502;&#1497;&#1505;&#1497;&#1501; &#1489;&#1490;&#1497;&#1503; &#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1513;&#1500; &#x20aa;'+f(res.va)+'.</li>'
+      +'</ul>'
+      +'<div class="bottom-note"><strong>&#1492;&#1496;&#1489;&#1492; &#1499;&#1493;&#1500;&#1500;&#1514;:</strong> &#1492;&#1506;&#1493;&#1489;&#1491; &#1511;&#1497;&#1489;&#1500; &#1495;&#1489;&#1497;&#1500;&#1492; &#1493;&#1510;&#1497;&#1493;&#1491; &#1489;&#1513;&#1493;&#1493;&#1497; &#x20aa;'+f(res.tp)+', &#1492;&#1502;&#1506;&#1505;&#1497;&#1511; &#1505;&#1508;&#1490; &#x20aa;'+f(tier.v)+', &#1493;&#1492;&#1506;&#1493;&#1489;&#1491; &#1504;&#1513;&#1488; &#1489;&#1492;&#1513;&#1493;&#1493;&#1488;&#1492; &#1500;&#1502;&#1510;&#1489;&#1497;&#1501; &#1513;&#1489;&#1492;&#1501; &#x20aa;'+f(res.nd)+' &#1489;&#1500;&#1489;&#1491; &#1506;&#1500; &#1496;&#1493;&#1489;&#1514; &#1492;&#1492;&#1504;&#1488;&#1492; &#1513;&#1504;&#1493;&#1514;&#1512;&#1492; &#1500;&#1493;.</div>'
+      +'</div>'
 
       // Footer
-      + '<div class="footer">'
-      + '<span>'+tier.l+' | &#x20aa;'+f(tier.v)+' | &#x20aa;'+f(_pc)+(_ac>0?' | &#1488;&#1489;&#1497;&#1494;&#1512;&#1497;&#1501;: &#x20aa;'+f(_ac):'')+' | &#1502;&#1505;: '+itPct+'</span>'
-      + '<span class="credit">By Bahaa Azzam | &#1497;&#1495;&#1497;&#1491;&#1514; &#1492;&#1506;&#1497;&#1500;&#1497;&#1514; &#8211; &#1513;&#1506;&#x22;&#1502;</span>'
-      + '</div>'
+      +'<div class="footer">'+tier.l+' | &#x20aa;'+f(tier.v)+' | &#x20aa;'+f(_pc)+(_ac>0?' | &#1488;&#1489;&#1497;&#1494;&#1512;&#1497;&#1501;: &#x20aa;'+f(_ac):'')+' | &#1502;&#1505; &#1513;&#1493;&#1500;&#1497;: '+itPct
+      +' &nbsp;&nbsp; <span class="credit">By Bahaa Azzam | &#1497;&#1495;&#1497;&#1491;&#1514; &#1492;&#1506;&#1497;&#1500;&#1497;&#1514; &#8211; &#1513;&#1506;&#x22;&#1502;</span></div>'
 
-      // Print button
-      + '<div style="text-align:center;margin-top:16px;">'
-      + '<button onclick="window.print()" style="padding:12px 32px;background:linear-gradient(135deg,#0d3d7c,#1a5fa8);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">&#1492;&#1491;&#1508;&#1505; / &#1513;&#1502;&#1493;&#1512; PDF</button>'
-      + '</div>'
-      + '</body></html>';
+      +'<button class="print-btn" onclick="window.print()">&#1492;&#1491;&#1508;&#1505; / &#1513;&#1502;&#1493;&#1512; PDF</button>'
+      +'</div></body></html>';
 
-    var w = window.open('', '_blank');
-    if (w) {
-      w.document.write(html);
-      w.document.close();
-    } else {
-      // fallback: blob
-      var blob = new Blob([html], {type:'text/html;charset=utf-8'});
-      var url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+    var w = window.open('','_blank');
+    if(w){ w.document.write(html); w.document.close(); }
+    else {
+      var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+      window.open(URL.createObjectURL(blob),'_blank');
     }
-
-  } catch(e) {
-    alert('Error: '+e.message);
-    console.error(e);
-  }
+  } catch(e){ alert('Error: '+e.message); console.error(e); }
 }
 
 
