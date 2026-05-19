@@ -23,41 +23,30 @@ button,input{font-family:'Segoe UI','Arial Hebrew',Arial,sans-serif;}
 </style>
 </head>
 <body>
-
 <div style="background:linear-gradient(135deg,#0d3d7c 0%,#1a5fa8 100%);color:#fff;padding:20px 20px 16px;text-align:right;box-shadow:0 4px 20px rgba(0,0,0,0.18);">
   <div style="font-size:11px;opacity:0.65;margin-bottom:3px;">&#1502;&#1495;&#1513;&#1489;&#1493;&#1503;</div>
   <div style="font-size:20px;font-weight:800;line-height:1.3;">&#1504;&#1497;&#1514;&#1493;&#1495; &#1506;&#1500;&#1493;&#1514; &#1495;&#1489;&#1497;&#1500;&#1492; &#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514;</div>
   <div style="font-size:13px;opacity:0.8;margin-top:3px;">&#1494;&#1511;&#1497;&#1508;&#1514; &#1513;&#1493;&#1493;&#1497; &#1493;&#1506;&#1500;&#1493;&#1514; &#1504;&#1496;&#1493; &#1500;&#1506;&#1493;&#1489;&#1491;</div>
 </div>
-
 <div style="margin:16px;background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 16px rgba(26,95,168,0.1);">
-
   <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:8px;">&#1502;&#1491;&#1512;&#1490; &#1492;&#1513;&#1514;&#1514;&#1508;&#1493;&#1514; &#1502;&#1506;&#1505;&#1497;&#1511;</label>
   <div id="tb" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
-
   <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">&#1502;&#1491;&#1512;&#1490; &#1502;&#1505; &#1492;&#1499;&#1504;&#1505;&#1492; &#1513;&#1493;&#1500;&#1497;</label>
   <div id="mrb" class="mr-wrap" style="margin-bottom:16px;"></div>
-
   <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">&#1506;&#1500;&#1493;&#1514; &#1495;&#1489;&#1497;&#1500;&#1492; &#1505;&#1500;&#1493;&#1500;&#1512;&#1497;&#1514; (&#x20aa;)</label>
   <input id="pi" type="number" class="inp" min="0" step="0.1" style="margin-bottom:14px;" oninput="_setPkg(this.value)">
-
   <button id="at" onclick="_togAcc()" style="background:none;border:none;color:#1a5fa8;font-size:13px;font-weight:600;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;margin-bottom:14px;">&#9658; &#1492;&#1493;&#1505;&#1507; &#1506;&#1500;&#1493;&#1514; &#1488;&#1489;&#1497;&#1494;&#1512;&#1497;&#1501;</button>
   <div id="ar" style="display:none;margin-bottom:14px;">
     <label style="display:block;font-size:13px;font-weight:600;color:#1a5fa8;margin-bottom:5px;">&#1506;&#1500;&#1493;&#1514; &#1488;&#1489;&#1497;&#1494;&#1512;&#1497;&#1501; (&#x20aa;)</label>
     <input id="ai" type="number" class="inp" min="0" step="0.1" value="0" oninput="_setAcc(this.value)">
   </div>
-
   <button onclick="_go()" style="width:100%;padding:13px;background:linear-gradient(135deg,#0d3d7c,#1a5fa8);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(26,95,168,0.3);">&#1495;&#1513;&#1489; &#x2193;</button>
 </div>
-
 <div id="rd" style="display:none;margin:0 16px 16px;"></div>
-
 <div id="credit"><strong>By Bahaa Azzam</strong> &nbsp;|&nbsp; &#1497;&#1495;&#1497;&#1491;&#1514; &#1492;&#1506;&#1497;&#1500;&#1497;&#1514; &ndash; &#1513;&#1506;&quot;&#1502;</div>
-
 <div id="ios-hint" style="display:none;margin:0 16px 16px;padding:10px 14px;background:#fff8e0;border:1px solid #f0a500;border-radius:8px;font-size:12px;color:#7a4a00;text-align:right;line-height:1.7;">
   &#x1F4F2; <strong>&#1500;&#1492;&#1514;&#1511;&#1504;&#1492; &#1506;&#1500; iPhone:</strong> &#1500;&#1495;&#1509; &#x1F517; &larr; &quot;&#1492;&#1493;&#1505;&#1507; &#1500;&#1502;&#1505;&#1498; &#1492;&#1489;&#1497;&#1514;&quot;
 </div>
-
 <script>
 const S_T0="\u05de\u05d9\u05e8\u05d1 / \u05de\u05e1\u05d3";
 const S_T1="\u05ea\u05d9\u05db\u05d5\u05df / \u05e0\u05d4\u05d2\u05d9\u05dd";
@@ -258,7 +247,7 @@ function downloadPDF(content, filename) {
 function _pdf() {
   try {
     const tier = _T[_ti];
-    const res = _calc(tier.v, _pc, _ac);
+    const res = _calc(tier.v, _pc, _ac, _mri);
     const pdf = MiniPDF();
     const M = 40; // left margin in points
     const RX = pdf.W - M; // right edge
