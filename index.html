@@ -212,155 +212,140 @@ function fmt(n) { return n.toLocaleString('he-IL',{minimumFractionDigits:2,maxim
 
 // &#9472;&#9472; Download PDF &#9472;&#9472;
 function downloadPDF(content, filename) {
-  // Convert to base64 data URI - works on all mobile browsers
   var bytes = new Uint8Array(content.length);
   for (var i = 0; i < content.length; i++) {
     bytes[i] = content.charCodeAt(i) & 0xff;
   }
-  // Build base64
   var binary = '';
   for (var j = 0; j < bytes.length; j++) {
     binary += String.fromCharCode(bytes[j]);
   }
   var b64 = btoa(binary);
   var dataUri = 'data:application/pdf;base64,' + b64;
-  
-  // Show a modal with the PDF link - guaranteed to work on mobile
-  var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
-  
-  var box = document.createElement('div');
-  box.style.cssText = 'background:#fff;border-radius:14px;padding:24px;margin:20px;text-align:center;max-width:320px;width:100%;direction:rtl;';
-  box.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">&#128196;</div>'
-    + '<div style="font-size:17px;font-weight:800;color:#0d3d7c;margin-bottom:8px;">&#1492;&#1490;&#1491;&#1512;&#1514; PDF &#1502;&#1493;&#1499;&#1504;&#1514;</div>'
-    + '<div style="font-size:13px;color:#666;margin-bottom:20px;line-height:1.6;">&#1500;&#1495;&#1509; &#1506;&#1500; &#1492;&#1499;&#1508;&#1514;&#1493;&#1512; &#1500;&#1508;&#1514;&#1497;&#1495;&#1492;.<br>&#1489;&#1&#65533;;&#1497;&#1497;&#1508;&#1493;&#1503;: &#x201C;Share&#x201D; &rarr; &#x201C;Save to Files&#x201D;</div>'
-    + '<a href="' + dataUri + '" download="cellular-analysis.pdf" target="_blank" '
-    + 'style="display:block;padding:14px;background:linear-gradient(135deg,#1a7a3c,#27ae60);color:#fff;border-radius:10px;font-size:16px;font-weight:700;text-decoration:none;margin-bottom:12px;">&#128196; &#1508;&#1514;&#1495; PDF</a>'
-    + '<button onclick="this.parentNode.parentNode.remove()" '
-    + 'style="width:100%;padding:12px;background:#f0f4f8;border:none;border-radius:10px;font-size:15px;color:#555;cursor:pointer;font-family:inherit;">&#1505;&#1490;&#1493;&#1512;</button>';
-  
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  var a = document.createElement('a');
+  a.href = dataUri;
+  a.download = filename || 'document.pdf';
+  a.target = '_blank';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); }, 300);
 }
 
 function _pdf() {
   try {
-    const tier = _T[_ti];
-    const res = _calc(tier.v, _pc, _ac, _mri);
-    const pdf = MiniPDF();
-    const M = 40; // left margin in points
-    const RX = pdf.W - M; // right edge
-    let y = 0;
+    var tier = _T[_ti];
+    var res = _calc(tier.v, _pc, _ac, _mri);
+    var itPct = Math.round(res.itr*100)+'%';
+    var totalPct = Math.round(res.tcr*100)+'%';
 
-    // &#9472;&#9472; Helper: section header &#9472;&#9472;
+    // Tier label in English
+    var tierLabels = ['Mirav/Misad','Tichon/Nahagim','Sagal Bakhir','Menahel+'];
+    var tierLabel = tierLabels[_ti] || tier.l;
+
+    var pdf2 = MiniPDF();
+    var M=40, RX=pdf2.W-M, W=pdf2.W, H=pdf2.H;
+    var y=0;
+
     function sec(title, sy) {
-      pdf.fillRect(M, sy, pdf.W - M*2, 22, '#1a5fa8');
-      pdf.fillRect(pdf.W - M - 5, sy, 5, 22, '#f0a500');
-      pdf.textRight(rv(title), RX - 8, sy + 15, 10, '#ffffff', true);
-      return sy + 28;
+      pdf2.fillRect(M, sy, W-M*2, 22, '#1a5fa8');
+      pdf2.fillRect(W-M-5, sy, 5, 22, '#f0a500');
+      pdf2.textRight(title, RX-8, sy+15, 10, '#ffffff', true);
+      return sy+28;
+    }
+    function row2(label, val, ry, bold) {
+      pdf2.textRight(label, RX, ry+10, 9, bold?'#1a1a1a':'#444444', bold);
+      pdf2.text('NIS '+_f(val), M, ry+10, 9, '#1a5fa8', bold);
+      pdf2.hline(M, ry+14, W-M, '#e0e8f0', 0.3);
+      return ry+18;
     }
 
-    // &#9472;&#9472; Helper: data row &#9472;&#9472;
-    function row(label, val, ry, bold) {
-      pdf.textRight(rv(label), RX, ry + 10, 9, bold ? '#1a1a1a' : '#444444', bold);
-      pdf.text('NIS ' + fmt(val), M, ry + 10, 9, '#1a5fa8', bold);
-      pdf.hline(M, ry + 14, pdf.W - M, '#e0e8f0', 0.3);
-      return ry + 18;
+    // HEADER
+    pdf2.fillRect(0, 0, W, 60, '#0d3d7c');
+    pdf2.fillRect(0, 0, 8, 60, '#f0a500');
+    pdf2.textRight('Cellular Package - Imputed Value & Net Cost', RX-5, 22, 13, '#ffffff', true);
+    pdf2.textRight('Package NIS '+_f(res.tp)+' | Tier: '+tierLabel+' | Tax: '+itPct, RX-5, 42, 9, '#a0c0ff', false);
+    y=70;
+
+    // SECTION A
+    y=sec('Part A - Commercial (vs. Carrier)', y);
+    pdf2.textRight('Commercial Deviation Check:', RX, y+10, 9, '#222222', true);
+    y+=18;
+    y=row2('Package & Equipment Cost', res.tp, y);
+    y=row2('Employer Allowance ('+tierLabel+')', tier.v, y);
+    pdf2.fillRect(M, y, W-M*2, 20, '#eef4ff');
+    pdf2.fillRect(W-M-4, y, 4, 20, '#1a5fa8');
+    var devNote = res.cd===0
+      ? 'No excess - employer covers full package.'
+      : 'Excess: NIS '+_f(res.tp)+' - NIS '+_f(tier.v)+' = NIS '+_f(res.cd);
+    pdf2.textRight(devNote, RX-6, y+13, 8.5, '#1a3a6c', false);
+    y+=24;
+    pdf2.fillRect(M, y, W-M*2, 20, '#ddeeff');
+    pdf2.textRight('Employee Share = NIS '+_f(res.cd), RX-6, y+13, 10, '#0d3d7c', true);
+    y+=28;
+
+    // SECTION B
+    y=sec('Part B - Tax Calculation (ITA)', y);
+    pdf2.textRight('Imputed Value Formula:', RX, y+10, 9, '#222222', true);
+    y+=18;
+    pdf2.textRight('1. Half package: NIS '+_f(res.tp)+' / 2 = NIS '+_f(res.tp/2), RX, y+10, 8.5, '#444444', false);
+    y+=16;
+    pdf2.textRight('2. Less employee share: NIS '+_f(res.tp/2)+' - NIS '+_f(res.cd)+' = NIS '+_f(res.va), RX, y+10, 8.5, '#444444', false);
+    y+=16;
+    pdf2.fillRect(M, y, W-M*2, 20, '#ddeeff');
+    pdf2.textRight('Imputed Value (Bruto): NIS '+_f(res.va), RX-6, y+13, 10, '#0d3d7c', true);
+    y+=28;
+
+    // SECTION C
+    y=sec('Part C - Actual Tax Cost', y);
+    pdf2.textRight('Tax deductions on NIS '+_f(res.va)+' (combined rate '+totalPct+'):', RX, y+10, 8.5, '#444444', false);
+    y+=18;
+
+    // Table header
+    pdf2.fillRect(M, y, W-M*2, 20, '#1a5fa8');
+    pdf2.textRight('Tax Component', RX-6, y+13, 8.5, '#ffffff', true);
+    pdf2.text('Rate', M+80, y+13, 8.5, '#ffffff', true);
+    pdf2.text('NIS', M+6, y+13, 8.5, '#ffffff', true);
+    y+=20;
+
+    function trow(label, pct, val, ry, tot) {
+      if(tot) pdf2.fillRect(M, ry, W-M*2, 20, '#1a5fa8');
+      pdf2.textRight(label, RX-6, ry+13, 8.5, tot?'#ffffff':'#333333', tot);
+      pdf2.text(pct, M+80, ry+13, 8.5, tot?'#ffffff':'#1a5fa8', tot);
+      pdf2.text('NIS '+_f(val), M+6, ry+13, 8.5, tot?'#ffcc44':'#c0392b', tot);
+      if(!tot) pdf2.hline(M, ry+16, W-M, '#e0e8f0', 0.3);
+      return ry+20;
     }
+    y=trow('Income Tax', itPct, res.it, y, false);
+    y=trow('Nat. Ins. + Health Tax', '12%', res.nh, y, false);
+    y=trow('Total Tax Cost (net deduction)', totalPct, res.tc, y, true);
+    y+=8;
 
-    // &#9472;&#9472; HEADER &#9472;&#9472;
-    pdf.fillRect(0, 0, pdf.W, 60, '#0d3d7c');
-    pdf.fillRect(0, 0, 8, 60, '#f0a500');
-    pdf.textRight(rv('\u05e0\u05d9\u05ea\u05d5\u05d7 \u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d5\u05e2\u05dc\u05d5\u05ea \u05e0\u05d8\u05d5 \u05e2\u05d5\u05d1\u05d3 - \u05d7\u05d1\u05d9\u05dc\u05d4 \u05d1\u05ea\u05d5\u05da \u05d4\u05de\u05db\u05e1\u05d4'), RX - 5, 22, 13, '#ffffff', true);
-    pdf.textRight(rv('\u05d7\u05d1\u05d9\u05dc\u05d4 \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea NIS ' + fmt(res.tp) + ' | \u05de\u05d3\u05e8\u05d2: ' + tier.l), RX - 5, 42, 9, '#a0c0ff', false);
-    y = 70;
+    // BOTTOM
+    pdf2.fillRect(M, y, W-M*2, 80, '#fff8e0');
+    pdf2.strokeRect(M, y, W-M*2, 80, '#f0a500', 1.2);
+    pdf2.textRight('Bottom Line - Monthly Net Cost to Employee:', RX-6, y+16, 10, '#7a4a00', true);
+    pdf2.textRight('NIS '+_f(res.cd)+'  Commercial Excess (from salary)', RX-6, y+32, 8.5, '#555555', false);
+    pdf2.textRight('NIS '+_f(res.tc)+'  Tax Cost (x'+totalPct+')', RX-6, y+46, 8.5, '#555555', false);
+    pdf2.fillRect(M+10, y+54, W-M*2-20, 20, '#c0392b');
+    pdf2.textRight('Total Net Deduction (Bank)', RX-14, y+67, 10, '#ffffff', true);
+    pdf2.text('NIS '+_f(res.nd), M+14, y+67, 10, '#ffffff', true);
+    y+=90;
 
-    // &#9472;&#9472; SECTION A &#9472;&#9472;
-    y = sec('\u05e9\u05dc\u05d1 \u05d0 - \u05d4\u05d7\u05dc\u05e7 \u05d4\u05de\u05e1\u05d7\u05e8\u05d9 (\u05de\u05d5\u05dc \u05d7\u05d1\u05e8\u05ea \u05d4\u05e1\u05dc\u05d5\u05dc\u05e8)', y);
-    pdf.textRight(rv('\u05d1\u05d7\u05d9\u05e0\u05ea \u05d4\u05d7\u05e8\u05d9\u05d2\u05d4 \u05de\u05d4\u05de\u05db\u05e1\u05d4 \u05d4\u05de\u05e9\u05e8\u05d3\u05d9\u05ea:'), RX, y + 10, 9, '#222222', true);
-    y += 18;
-    y = row('\u05e2\u05dc\u05d5\u05ea \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4 \u05d5\u05d4\u05e6\u05d9\u05d5\u05d3 \u05d1\u05e4\u05d5\u05e2\u05dc \u05d1\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea', res.tp, y);
-    y = row('\u05ea\u05e7\u05e8\u05ea \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05de\u05e9\u05e8\u05d3 (' + tier.l + ')', tier.v, y);
+    // FOOTER
+    pdf2.hline(M, y, W-M, '#aabbcc', 0.5);
+    y+=12;
+    pdf2.textRight('Tier: '+tierLabel+' | Employer: NIS '+_f(tier.v)+' | Package: NIS '+_f(_pc)+(_ac>0?' | Acc: NIS '+_f(_ac):'')+' | Tax: '+itPct, RX, y, 7.5, '#aaaaaa', false);
+    y+=14;
+    pdf2.hline(M, y, W-M, '#aabbcc', 0.5);
+    y+=12;
+    pdf2.textRight('By Bahaa Azzam  |  Elite Unit - SHAAM', RX, y, 8.5, '#1a5fa8', true);
 
-    // note box
-    pdf.fillRect(M, y, pdf.W - M*2, 20, '#eef4ff');
-    pdf.fillRect(pdf.W - M - 4, y, 4, 20, '#1a5fa8');
-    const devNote = res.cd === 0
-      ? rv('\u05d0\u05d9\u05df \u05d7\u05e8\u05d9\u05d2\u05d4 - \u05d4\u05de\u05e9\u05e8\u05d3 \u05de\u05e9\u05dc\u05dd \u05d0\u05ea \u05de\u05dc\u05d5\u05d0 \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4.')
-      : rv('\u05e0\u05d9\u05db\u05d5\u05d9 \u05d7\u05e8\u05d9\u05d2\u05d4: NIS ' + fmt(res.tp) + ' - NIS ' + fmt(tier.v) + ' = NIS ' + fmt(res.cd));
-    pdf.textRight(devNote, RX - 6, y + 13, 8.5, '#1a3a6c', false);
-    y += 24;
-
-    // result box
-    pdf.fillRect(M, y, pdf.W - M*2, 20, '#ddeeff');
-    pdf.textRight(rv('\u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea \u05d4\u05e2\u05d5\u05d1\u05d3 \u05d1\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea = NIS ' + fmt(res.cd)), RX - 6, y + 13, 10, '#0d3d7c', true);
-    y += 28;
-
-    // &#9472;&#9472; SECTION B &#9472;&#9472;
-    y = sec('\u05e9\u05dc\u05d1 \u05d1 - \u05d7\u05d9\u05e9\u05d5\u05d1 \u05d4\u05de\u05e1 (\u05de\u05d5\u05dc \u05e8\u05e9\u05d5\u05ea \u05d4\u05de\u05d9\u05e1\u05d9\u05dd)', y);
-    pdf.textRight(rv('\u05d9\u05d9\u05e9\u05d5\u05dd \u05e0\u05d5\u05e1\u05d7\u05ea \u05e9\u05d5\u05d5\u05d9 \u05d4\u05e9\u05d9\u05de\u05d5\u05e9:'), RX, y + 10, 9, '#222222', true);
-    y += 18;
-    pdf.textRight(rv('1.  \u05d7\u05e6\u05d9 \u05de\u05e2\u05dc\u05d5\u05ea \u05d4\u05d7\u05d1\u05d9\u05dc\u05d4: NIS ' + fmt(res.tp) + ' / 2 = NIS ' + fmt(res.tp/2)), RX, y + 10, 8.5, '#444444', false);
-    y += 16;
-    pdf.textRight(rv('2.  \u05e4\u05d7\u05d5\u05ea \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea: NIS ' + fmt(res.tp/2) + ' - NIS ' + fmt(res.cd) + ' = NIS ' + fmt(res.va)), RX, y + 10, 8.5, '#444444', false);
-    y += 16;
-    pdf.fillRect(M, y, pdf.W - M*2, 20, '#ddeeff');
-    pdf.textRight(rv('\u05d6\u05e7\u05d9\u05e4\u05ea \u05e9\u05d5\u05d5\u05d9: NIS ' + fmt(res.va)), RX - 6, y + 13, 10, '#0d3d7c', true);
-    y += 28;
-
-    // &#9472;&#9472; SECTION C &#9472;&#9472;
-    y = sec('\u05e9\u05dc\u05d1 \u05d2 - \u05e2\u05dc\u05d5\u05ea \u05d4\u05de\u05e1 \u05d4\u05d0\u05de\u05d9\u05ea\u05d9\u05ea', y);
-
-    // table header
-    pdf.fillRect(M, y, pdf.W - M*2, 20, '#1a5fa8');
-    pdf.textRight(rv('\u05e8\u05db\u05d9\u05d1 \u05d4\u05e0\u05d9\u05db\u05d5\u05d9'), RX - 6, y + 13, 8.5, '#ffffff', true);
-    pdf.text('% NIS', M + 80, y + 13, 8.5, '#ffffff', true);
-    pdf.text(rv('\u05e1\u05db\u05d5\u05dd \u05e0\u05d8\u05d5'), M + 6, y + 13, 8.5, '#ffffff', true);
-    y += 20;
-
-    // table rows
-    function trow(label, pct, val, ry, isTot) {
-      if (isTot) pdf.fillRect(M, ry, pdf.W - M*2, 20, '#1a5fa8');
-      pdf.textRight(rv(label), RX - 6, ry + 13, 8.5, isTot ? '#ffffff' : '#333333', isTot);
-      pdf.text(pct, M + 80, ry + 13, 8.5, isTot ? '#ffffff' : '#1a5fa8', isTot);
-      pdf.text('NIS ' + fmt(val), M + 6, ry + 13, 8.5, isTot ? '#ffcc44' : '#c0392b', isTot);
-      if (!isTot) pdf.hline(M, ry + 16, pdf.W - M, '#e0e8f0', 0.3);
-      return ry + 20;
-    }
-    y = trow('\u05de\u05e1 \u05d4\u05db\u05e0\u05e1\u05d4', '35%', res.it, y, false);
-    y = trow('\u05d1\u05d9\u05d8\u05d5\u05d7 \u05dc\u05d0\u05d5\u05de\u05d9 \u05d5\u05de\u05e1 \u05d1\u05e8\u05d9\u05d0\u05d5\u05ea', '12%', res.nh, y, false);
-    y = trow('\u05e1\u05da \u05d4\u05db\u05dc \u05e2\u05dc\u05d5\u05ea \u05d4\u05de\u05e1 (\u05d9\u05e8\u05d9\u05d3\u05d4 \u05de\u05d4\u05e0\u05d8\u05d5)', '47%', res.tc, y, true);
-    y += 8;
-
-    // &#9472;&#9472; BOTTOM BOX &#9472;&#9472;
-    pdf.fillRect(M, y, pdf.W - M*2, 80, '#fff8e0');
-    pdf.strokeRect(M, y, pdf.W - M*2, 80, '#f0a500', 1.2);
-    pdf.textRight(rv('\u05e9\u05d5\u05e8\u05d4 \u05ea\u05d7\u05ea\u05d5\u05e0\u05d4 - \u05e2\u05dc\u05d5\u05ea \u05d7\u05d5\u05d3\u05e9\u05d9\u05ea \u05e1\u05d5\u05e4\u05d9\u05ea \u05dc\u05e2\u05d5\u05d1\u05d3:'), RX - 6, y + 16, 10, '#7a4a00', true);
-    pdf.textRight(rv('NIS ' + fmt(res.cd) + '  \u05d7\u05e8\u05d9\u05d2\u05d4 \u05de\u05e1\u05d7\u05e8\u05d9\u05ea'), RX - 6, y + 32, 8.5, '#555555', false);
-    pdf.textRight(rv('NIS ' + fmt(res.tc) + '  \u05e2\u05dc\u05d5\u05ea \u05de\u05e1 (x47%)'), RX - 6, y + 46, 8.5, '#555555', false);
-    pdf.fillRect(M + 10, y + 54, pdf.W - M*2 - 20, 20, '#c0392b');
-    pdf.textRight(rv('\u05e1\u05da \u05d9\u05e8\u05d9\u05d3\u05d4 \u05de\u05d4\u05e0\u05d8\u05d5 \u05d1\u05d1\u05e0\u05e7'), RX - 14, y + 67, 10, '#ffffff', true);
-    pdf.text('NIS ' + fmt(res.nd), M + 14, y + 67, 10, '#ffffff', true);
-    y += 90;
-
-    // &#9472;&#9472; FOOTER &#9472;&#9472;
-    pdf.hline(M, y, pdf.W - M, '#aabbcc', 0.5);
-    y += 12;
-    pdf.textRight(
-      rv('\u05de\u05d3\u05e8\u05d2: ' + tier.l + ' | \u05d4\u05e9\u05ea\u05ea\u05e4\u05d5\u05ea: NIS ' + fmt(tier.v) + ' | \u05d7\u05d1\u05d9\u05dc\u05d4: NIS ' + fmt(_pc) + (_ac > 0 ? ' | \u05d0\u05d1\u05d9\u05d6\u05e8\u05d9\u05dd: NIS ' + fmt(_ac) : '') + ' | \u05de\u05e1: 47%'),
-      RX, y, 7.5, '#aaaaaa', false
-    );
-    y += 14;
-    pdf.hline(M, y, pdf.W - M, '#aabbcc', 0.5);
-    y += 12;
-    pdf.textRight(rv('By Bahaa Azzam  |  \u05d9\u05d7\u05d9\u05d3\u05ea \u05d4\u05e2\u05d9\u05dc\u05d9\u05ea - \u05e9\u05e2"\u05de'), RX, y, 8.5, '#1a5fa8', true);
-
-    const pdfContent = pdf.build();
-    downloadPDF(pdfContent, 'cellular-analysis.pdf');
+    var content = pdf2.build();
+    downloadPDF(content, 'cellular-analysis.pdf');
 
   } catch(e) {
-    alert('\u05e9\u05d2\u05d9\u05d0\u05d4: ' + e.message);
+    alert('Error: '+e.message);
     console.error(e);
   }
 }
